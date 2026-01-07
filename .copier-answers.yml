@@ -1,0 +1,15 @@
+# Changes here will be overwritten by Copier
+_commit: 34d23a0
+_src_path: https://github.com/monarch-initiative/monarch-project-copier
+copyright_year: '2026'
+email: nicolas.matentzoglu@gmail.com
+full_name: Nicolas Matentzoglu
+gh_action_docs_preview: true
+github_handle: matentzn
+github_org: obophenotype
+license: Apache-2.0
+project_description: AI-powered pipeline for harmonising chemical phenotypes in the
+    Human Phenotype Ontology (HPO)
+project_name: hpo-ai
+project_slug: hpo_ai
+
