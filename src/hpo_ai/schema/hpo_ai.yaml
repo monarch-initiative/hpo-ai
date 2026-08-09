@@ -1,0 +1,446 @@
+id: https://w3id.org/obophenotype/hpo-ai
+name: hpo_ai
+title: HPO-AI Data Model
+description: >-
+  Data models for AI-assisted curation of chemical phenotypes in the
+  Human Phenotype Ontology (HPO).
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  hpoai: https://w3id.org/obophenotype/hpo-ai/
+  HP: http://purl.obolibrary.org/obo/HP_
+  CHEBI: http://purl.obolibrary.org/obo/CHEBI_
+  PR: http://purl.obolibrary.org/obo/PR_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  GO: http://purl.obolibrary.org/obo/GO_
+  oio: http://www.geneontology.org/formats/oboInOwl#
+  IAO: http://purl.obolibrary.org/obo/IAO_
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  skos: http://www.w3.org/2004/02/skos/core#
+
+imports:
+  - linkml:types
+
+default_range: string
+default_prefix: hpoai
+
+
+# =============================================================================
+# ENUMS
+# =============================================================================
+
+enums:
+
+  PatternType:
+    description: DOSDP pattern types for chemical phenotypes.
+    permissible_values:
+      abnormalLevelOfChemicalEntityInBlood:
+        description: Abnormal level of a chemical in blood
+      abnormalLevelOfChemicalEntityInUrine:
+        description: Abnormal level of a chemical in urine
+      abnormalLevelOfChemicalEntityInLocation:
+        description: Abnormal level of a chemical in a specific location
+      abnormallyIncreasedLevelOfChemicalEntityInBlood:
+        description: Increased level of a chemical in blood
+      abnormallyIncreasedLevelOfChemicalEntityInUrine:
+        description: Increased level of a chemical in urine
+      abnormallyIncreasedLevelOfChemicalEntityInLocation:
+        description: Increased level of a chemical in a specific location
+      abnormallyDecreasedLevelOfChemicalEntityInBlood:
+        description: Decreased level of a chemical in blood
+      abnormallyDecreasedLevelOfChemicalEntityInUrine:
+        description: Decreased level of a chemical in urine
+      abnormallyDecreasedLevelOfChemicalEntityInLocation:
+        description: Decreased level of a chemical in a specific location
+      abnormalAbsenceOfChemicalEntity:
+        description: Abnormal absence of a chemical entity
+      modifier:
+        description: Modifier phenotype (e.g., episodic, recurrent)
+      combination_phenotype:
+        description: Combination of multiple phenotypes
+      process:
+        description: Process or metabolic pathway phenotype
+      activity:
+        description: Enzyme activity phenotype
+      method_observed:
+        description: Method-specific observation
+      unknown:
+        description: Pattern could not be determined
+
+  Direction:
+    description: Direction of the abnormality.
+    permissible_values:
+      increased:
+        description: Level is above normal
+      decreased:
+        description: Level is below normal
+      abnormal:
+        description: Level deviates from normal (direction unspecified)
+
+  EvidenceType:
+    description: Type of evidence supporting a curation decision.
+    permissible_values:
+      chebi_match:
+        description: Direct match to CHEBI term
+      pro_match:
+        description: Direct match to PRO (Protein Ontology) term
+      llm_extraction:
+        description: Chemical entity extracted by LLM
+      pattern_inference:
+        description: Pattern inferred from term structure
+      literature_support:
+        description: Evidence from literature search
+      existing_axiom:
+        description: Evidence from existing ontology axiom
+
+  ReviewStatus:
+    description: Status of the curation proposal.
+    permissible_values:
+      pending:
+        description: Not yet reviewed
+      auto_approved:
+        description: Automatically approved (high confidence)
+      needs_review:
+        description: Requires human review
+      approved:
+        description: Approved by curator
+      rejected:
+        description: Rejected by curator
+      skipped:
+        description: Skipped (e.g., not a chemical phenotype)
+
+  ChangeType:
+    description: Type of change proposed.
+    permissible_values:
+      label_only:
+        description: Only the label is changing
+      definition_only:
+        description: Only the definition is changing
+      axiom_only:
+        description: Only adding/fixing logical axiom
+      full_refactor:
+        description: Multiple significant changes
+      no_change:
+        description: Term already conformant
+
+  SynonymScope:
+    description: Scope of synonym.
+    permissible_values:
+      exact:
+        description: Exact synonym
+      narrow:
+        description: Narrower meaning
+      broad:
+        description: Broader meaning
+      related:
+        description: Related term
+
+
+# =============================================================================
+# CLASSES
+# =============================================================================
+
+classes:
+
+  # ---------------------------------------------------------------------------
+  # HP Term Extraction
+  # ---------------------------------------------------------------------------
+
+  HPTerm:
+    description: >-
+      An extracted HP term that is a candidate for chemical phenotype curation.
+    attributes:
+      id:
+        identifier: true
+        range: uriorcurie
+        description: HP term identifier (e.g., HP:0001943)
+      label:
+        range: string
+        required: true
+        description: Current rdfs:label of the term
+      definition:
+        range: string
+        description: Current definition (IAO:0000115)
+      synonyms:
+        multivalued: true
+        range: Synonym
+        inlined_as_list: true
+        description: Current synonyms
+      parents:
+        multivalued: true
+        range: uriorcurie
+        description: Direct parent HP term IDs
+      existing_chemical_entity:
+        range: uriorcurie
+        description: Existing CHEBI/PRO annotation if present
+      existing_location:
+        range: uriorcurie
+        description: Existing anatomical location (UBERON) if present
+      existing_logical_definition:
+        range: string
+        description: Existing logical definition if present
+
+  Synonym:
+    description: A synonym with scope information.
+    attributes:
+      value:
+        range: string
+        required: true
+        description: The synonym text
+      scope:
+        range: SynonymScope
+        description: Scope of the synonym
+
+  # ---------------------------------------------------------------------------
+  # Chemical Entity Evidence
+  # ---------------------------------------------------------------------------
+
+  ChemicalEntityEvidence:
+    description: >-
+      Evidence for a CHEBI or PRO entity match.
+    attributes:
+      id:
+        identifier: true
+        range: string
+        description: Unique evidence ID
+      entity_id:
+        range: uriorcurie
+        required: true
+        description: CHEBI or PRO identifier
+      entity_label:
+        range: string
+        required: true
+        description: Label of the chemical/protein entity
+      entity_source:
+        range: string
+        description: Source ontology (CHEBI or PRO)
+      confidence:
+        range: float
+        minimum_value: 0.0
+        maximum_value: 1.0
+        description: Confidence score for this match
+      evidence_type:
+        range: EvidenceType
+        description: How this match was determined
+      match_description:
+        range: string
+        description: Explanation of why this entity was matched
+      preferred_abbreviation:
+        range: string
+        description: Widely used abbreviation if applicable (e.g., LDL, HDL, CK)
+      is_protonated_form:
+        range: boolean
+        description: Whether this is an ionized/protonated form
+      is_stereoisomer:
+        range: boolean
+        description: Whether this is a specific stereoisomer (L/D form)
+      alternative_forms:
+        multivalued: true
+        range: uriorcurie
+        description: Alternative CHEBI IDs (e.g., atom vs ion)
+
+  # ---------------------------------------------------------------------------
+  # Pattern Assignment
+  # ---------------------------------------------------------------------------
+
+  PatternAssignment:
+    description: >-
+      Assignment of a DOSDP pattern to an HP term.
+    attributes:
+      pattern_name:
+        range: PatternType
+        required: true
+        description: Name of the DOSDP pattern
+      direction:
+        range: Direction
+        description: Direction of abnormality
+      location_id:
+        range: uriorcurie
+        description: Anatomical location (UBERON ID)
+      location_label:
+        range: string
+        description: Label of anatomical location
+      confidence:
+        range: float
+        minimum_value: 0.0
+        maximum_value: 1.0
+        description: Confidence in pattern assignment
+      rationale:
+        range: string
+        description: Explanation for pattern choice
+      requires_new_pattern:
+        range: boolean
+        description: Whether a new DOSDP pattern is needed
+
+  # ---------------------------------------------------------------------------
+  # Curation Proposal
+  # ---------------------------------------------------------------------------
+
+  CurationProposal:
+    description: >-
+      A proposed change to an HP term.
+    attributes:
+      id:
+        identifier: true
+        range: string
+        description: Unique proposal ID
+      proposed_label:
+        range: string
+        description: New proposed label
+      proposed_definition:
+        range: string
+        description: New proposed definition
+      proposed_synonyms:
+        multivalued: true
+        range: Synonym
+        inlined_as_list: true
+        description: Proposed synonyms (including original label as exact synonym)
+      proposed_chemical_entity:
+        range: uriorcurie
+        description: Proposed CHEBI/PRO ID
+      proposed_location:
+        range: uriorcurie
+        description: Proposed anatomical location
+      proposed_logical_definition:
+        range: string
+        description: Proposed OWL logical definition
+      change_type:
+        range: ChangeType
+        description: Type of change being proposed
+      label_diff:
+        range: string
+        description: Description of label change
+      definition_diff:
+        range: string
+        description: Description of definition change
+
+  # ---------------------------------------------------------------------------
+  # Evidence Packet
+  # ---------------------------------------------------------------------------
+
+  EvidencePacket:
+    description: >-
+      Container for all evidence supporting a curation decision for an HP term.
+    attributes:
+      id:
+        identifier: true
+        range: string
+        description: Unique packet ID (e.g., pkt_abc123)
+      hp_term:
+        range: HPTerm
+        required: true
+        inlined: true
+        description: The HP term being curated
+      chemical_evidence:
+        multivalued: true
+        range: ChemicalEntityEvidence
+        inlined_as_list: true
+        description: Evidence for chemical entity matches
+      pattern_assignment:
+        range: PatternAssignment
+        inlined: true
+        description: Assigned DOSDP pattern
+      proposal:
+        range: CurationProposal
+        inlined: true
+        description: Generated curation proposal
+      overall_confidence:
+        range: float
+        minimum_value: 0.0
+        maximum_value: 1.0
+        description: Overall confidence score
+      review_status:
+        range: ReviewStatus
+        description: Current review status
+      curator_notes:
+        range: string
+        description: Notes from curator review
+      created_at:
+        range: datetime
+        description: When this packet was created
+      updated_at:
+        range: datetime
+        description: When this packet was last updated
+
+  # ---------------------------------------------------------------------------
+  # Batch Processing
+  # ---------------------------------------------------------------------------
+
+  CurationBatch:
+    description: >-
+      A batch of evidence packets for processing together.
+    attributes:
+      id:
+        identifier: true
+        range: string
+        description: Unique batch ID
+      name:
+        range: string
+        description: Human-readable batch name
+      description:
+        range: string
+        description: Description of what this batch contains
+      packets:
+        multivalued: true
+        range: EvidencePacket
+        inlined_as_list: true
+        description: Evidence packets in this batch
+      filter_criteria:
+        range: string
+        description: How terms were selected for this batch
+      created_at:
+        range: datetime
+        description: When this batch was created
+      stats:
+        range: BatchStats
+        inlined: true
+        description: Statistics about this batch
+
+  BatchStats:
+    description: Statistics about a curation batch.
+    attributes:
+      total_terms:
+        range: integer
+        description: Total number of terms in batch
+      auto_approved:
+        range: integer
+        description: Terms auto-approved
+      needs_review:
+        range: integer
+        description: Terms needing human review
+      high_confidence:
+        range: integer
+        description: Terms with confidence >= 0.9
+      medium_confidence:
+        range: integer
+        description: Terms with confidence 0.7-0.9
+      low_confidence:
+        range: integer
+        description: Terms with confidence < 0.7
+
+  # ---------------------------------------------------------------------------
+  # Configuration
+  # ---------------------------------------------------------------------------
+
+  PipelineConfig:
+    description: Configuration for the HPO-AI pipeline.
+    attributes:
+      auto_approve_threshold:
+        range: float
+        description: Minimum confidence for auto-approval (default 0.9)
+      review_threshold:
+        range: float
+        description: Minimum confidence to include in review queue (default 0.5)
+      chebi_weight:
+        range: float
+        description: Weight for CHEBI match confidence
+      pattern_weight:
+        range: float
+        description: Weight for pattern fit confidence
+      label_similarity_weight:
+        range: float
+        description: Weight for label similarity
+      preferred_chebi_forms:
+        multivalued: true
+        range: string
+        description: List of preferred CHEBI ID conventions

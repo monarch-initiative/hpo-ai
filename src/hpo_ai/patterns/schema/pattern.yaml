@@ -1,0 +1,110 @@
+id: https://w3id.org/obophenotype/hpo-ai/pattern
+name: hpo_ai_pattern
+title: HPO-AI Pattern Schema
+description: >-
+  A simplified, DOSDP-like pattern schema for pattern-driven curation of
+  chemical phenotypes. Mimics the structure of HPO's dosdp-patterns-hpo
+  (vars, name, def, synonyms, equivalentTo) with named ``{var}`` placeholders,
+  plus a ``selector`` for association and ``allow_string`` for the case where a
+  chemical filler is a bare string rather than a resolved ontology entity.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  hpoaipat: https://w3id.org/obophenotype/hpo-ai/pattern/
+
+imports:
+  - linkml:types
+
+default_range: string
+default_prefix: hpoaipat
+
+enums:
+
+  DirectionSelector:
+    description: Direction of abnormality a pattern applies to.
+    permissible_values:
+      increased:
+      decreased:
+      abnormal:
+
+  SynScope:
+    description: Scope of a synonym.
+    permissible_values:
+      exact:
+      related:
+      broad:
+      narrow:
+
+classes:
+
+  Selector:
+    description: How an HP term is matched to a pattern.
+    attributes:
+      direction:
+        range: DirectionSelector
+        required: true
+      location:
+        description: UBERON id of the fluid/anatomical location, if the pattern is location-specific.
+        range: string
+
+  Var:
+    description: A pattern variable and the ontology class it ranges over.
+    attributes:
+      name:
+        identifier: true
+        range: string
+      range:
+        description: CURIE of the class this variable ranges over (e.g. CHEBI:24431).
+        range: string
+      allow_string:
+        description: Whether this variable may be filled by a bare string when no entity resolves.
+        range: boolean
+        ifabsent: 'False'
+      fixed:
+        description: Whether this variable is fixed by the pattern (e.g. the location) rather than extracted.
+        range: boolean
+        ifabsent: 'False'
+
+  SynonymTemplate:
+    description: A synonym text template.
+    attributes:
+      scope:
+        range: SynScope
+        required: true
+      text:
+        range: string
+        required: true
+
+  Pattern:
+    description: A simplified DOSDP pattern.
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+        range: string
+      description:
+        range: string
+      selector:
+        range: Selector
+        required: true
+      qualifier:
+        description: Fluid-first qualifier used in text (e.g. CSF, circulating, urinary).
+        range: string
+      vars:
+        range: Var
+        multivalued: true
+        inlined_as_list: true
+      name:
+        description: Label template with named {var} placeholders.
+        range: string
+        required: true
+      definition:
+        description: Definition template with named {var} placeholders.
+        range: string
+      synonyms:
+        range: SynonymTemplate
+        multivalued: true
+        inlined_as_list: true
+      equivalentTo:
+        description: OWL logical (Manchester-style) template with named {var} placeholders.
+        range: string

@@ -1,0 +1,560 @@
+id: https://w3id.org/monarch-initiative/transformation-provenance
+name: transformation-provenance
+title: Transformation-Provenance Model
+description: >-
+  A standalone, reusable LinkML schema for recording the step-by-step transformation
+  of a messy source string into a canonical identifier (extract -> translate -> ground
+  -> normalize). Every step records its incoming and outgoing value (invariant I-8) and
+  every transform action + failure-mode flag is a controlled enum. Names nothing
+  domain-specific so it lifts into any ETL / NER-NEL / ontology-curation pipeline.
+
+  NOTE: the namespace id below is a placeholder; the w3id.org redirect is not yet
+  registered (spec 2026-07-28, section 8.1). Register before release.
+license: BSD-3-Clause
+prefixes:
+  linkml: https://w3id.org/linkml/
+  tprov: https://w3id.org/monarch-initiative/transformation-provenance/
+  skos: http://www.w3.org/2004/02/skos/core#
+  wikidata: http://www.wikidata.org/entity/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_range: string
+default_prefix: tprov
+imports:
+  - linkml:types
+
+enums:
+  # ---------------------------------------------------------------------------
+  # New provenance vocabulary
+  # ---------------------------------------------------------------------------
+  TransformationCategory:
+    description: WHICH transformation stage a step performs (discriminator for a heterogeneous steps[] list).
+    permissible_values:
+      EXTRACTION:
+        description: Pull a mention string out of source text or a structured field.
+      TRANSLATION:
+        description: Translate a non-English mention to English.
+      GROUNDING:
+        description: Resolve a string to an initial ontology id.
+      NORMALIZATION:
+        description: Map an initial id to a canonical target id.
+  TransformationMethod:
+    description: HOW a step was performed.
+    permissible_values:
+      LLM:
+        description: Large language model extraction/generation.
+      DETERMINISTIC_RULE:
+        description: Deterministic rule application (no ML).
+      LEXICAL_MATCH:
+        description: Lexical/string match against a vocabulary index.
+      TRANSLITERATION:
+        description: Script transliteration (e.g. Cyrillic -> Latin).
+      API:
+        description: External service call (e.g. DeepL, RxNav).
+      STRUCTURED_FIELD:
+        description: Value read verbatim from a structured source column/cell.
+      HUMAN:
+        description: Manual human action.
+  StepStatus:
+    description: Curation lifecycle of a step — the uniform human-review hook across all stages.
+    permissible_values:
+      MACHINE:
+        description: Machine-produced, no review lifecycle entered.
+      CANDIDATE:
+        description: Machine-produced, awaiting review.
+      UNDER_REVIEW:
+        description: A curator is reviewing this step.
+      CONFIRMED:
+        description: Human-approved.
+      REJECTED:
+        description: Human-rejected.
+  AgentTypeEnum:
+    description: Kind of agent that ran a step.
+    permissible_values:
+      HUMAN:
+        description: A human being.
+      AI_AGENT:
+        description: An automated/AI agent or service.
+  ExtractionQuality:
+    description: How faithfully the extracted mention string reproduces the supporting quote.
+    permissible_values:
+      verbatim:
+        description: Output is a verbatim substring of the source.
+      canonicalized:
+        description: Output canonicalized (casing/spacing/lightly reworded) but same referent.
+      synonym:
+        description: Output is a synonym of the phrase in the source.
+      not_stated:
+        description: Output not literally present in the supporting quote.
+  TranslationPrecision:
+    description: Semantic precision of a translation relative to the source.
+    permissible_values:
+      exact:
+        description: Translation is an exact semantic match.
+      broader:
+        description: Translation is broader than the source term.
+      narrower:
+        description: Translation is narrower than the source term.
+      close:
+        description: Translation is close but not exact.
+  ExtractionFlag:
+    description: >-
+      Failure-mode signals on an extraction step — strictly about **recognising the entity
+      mention in the source** (did this string really occur here, and is it the right span?).
+      Signals about the *claim* the mention participates in (polarity, wrong relationship,
+      wrong section) are NOT extraction failures — they live on AssertionFlag, because the
+      entity can be recognised perfectly while the asserted relation is wrong. See
+      FAILURE_MODES.md.
+    permissible_values:
+      hallucination:
+        description: Entity invented, not present in the source text at all (FAILURE_MODES 5.1).
+      truncated_snippet:
+        description: Supporting span truncated, so the mention may not be fully supported (5.6).
+      coreference_ambiguity:
+        description: Subject resolved by coreference; which entity the span refers to is uncertain (5.5).
+  AssertionFlag:
+    description: >-
+      Failure-mode signals on an **asserted claim** (a relation between entities extracted
+      from a source), as opposed to the recognition of the entities themselves. The
+      canonical case: "hyperthyroidism" is recognised perfectly, but the sentence lists it
+      as a *depleting condition*, not an indication — the mention is right, the relation is
+      wrong. See FAILURE_MODES.md §4-5.
+    permissible_values:
+      negated_inversion:
+        description: The source states the relation negatively; recording it positively inverts the claim (4.1/4.2).
+      over_extraction:
+        description: The entity is present in the text, but not in this relationship to the subject (5.2).
+      wrong_section:
+        description: The claim was drawn from a section that does not assert this relationship (3.5).
+      wrong_pairing:
+        description: The relation was attributed to the wrong subject, e.g. the wrong active moiety in a combination label (5.4).
+  TranslationFlag:
+    description: Failure-mode signals on a translation step.
+    permissible_values:
+      unreviewed_machine:
+        description: Machine translation not human-reviewed (7.3).
+      trade_name_source:
+        description: Translated from a trade name, not the INN (7.4).
+  GroundingFlag:
+    description: Failure-mode signals on a grounding step.
+    permissible_values:
+      fuzzy:
+        description: Fuzzy (edit-distance) match; curator-reviewable.
+      ambiguous_resolved:
+        description: Multiple candidates; one chosen.
+      broadened:
+        description: A qualifier was stripped, broadening the claim (11.2).
+      isotope_risk:
+        description: Digit-substitution edit risks isotope confusion, e.g. 13C->14C.
+      formulation_stripped:
+        description: Dose/form/release/pharmacopoeia noise stripped to reach the ingredient (5.4).
+      rxnorm_proposed:
+        description: Grounded via an RxNav substance-resolver proposal.
+      script_transliteration:
+        description: Reached via script transliteration, e.g. Cyrillic (2.5).
+  NormalizationFlag:
+    description: Failure-mode signals on a normalization step.
+    permissible_values:
+      no_target_xref:
+        description: Target namespace publishes no xref; left un-normalized (10.2).
+      deprecated_replacement:
+        description: Followed an obsolete-term replaced_by pointer.
+
+  # ---------------------------------------------------------------------------
+  # Moved verbatim from grounding.yaml (keep annotations byte-identical so the
+  # code-map test tests/test_grounding_schema.py::test_code_rule_maps_match_schema
+  # stays green against RULE_CERTAINTY / RULE_PREDICATE in preprocess.py).
+  # ---------------------------------------------------------------------------
+  GroundingQualityEnum:
+    description: How much string manipulation was needed to ground.
+    permissible_values:
+      curated:
+        description: Manual assertion in the grounding SSSOM store.
+      lexical_exact:
+        description: Exact match to label or synonym, string unchanged.
+      lexical_exact_normalized:
+        description: Exact after non-semantic normalization (whitespace, comma, dashes, case, unicode).
+      lexical_exact_surgery:
+        description: Exact after minor semantic surgery (disease->disorder, type 1->type I).
+      rxnorm_proposed:
+        description: >-
+          Grounded via a RxNav substance-resolver proposal (product/formulation -> ingredient,
+          network-derived, curator-reviewable; see PreprocessingRuleEnum.rxnorm_resolve).
+      source_asserted:
+        description: >-
+          The source supplied the identifier directly (a pre-grounded field) and MeDIC made no
+          grounding decision of its own — so there is no matching evidence to audit. Recorded
+          rather than left blank so the chain still ends where the record ends (I-8), but it is
+          NOT a verified match: treat as unverified provenance.
+      unresolved:
+        description: No deterministic single match (includes ambiguous multi-candidate hits).
+  PreprocessingRuleEnum:
+    description: >-
+      Controlled vocabulary of the deterministic string transforms the grounder may apply
+      to a source literal before matching. The rule ids applied to a given match are
+      recorded in the SSSOM ``subject_preprocessing`` slot, so every "hack to beat a label
+      into shape" is transparent and auditable.
+
+      Each value carries three annotations (a lightweight metadata mixin shared by every
+      value): ``certainty`` (0-1 float — how meaning-preserving / trustworthy the transform
+      is; 1.0 = no risk, lower = looser), ``rule_family`` (a coarse grouping so rules can be
+      selected/aggregated later), and ``predicate`` (the SSSOM predicate a match via this
+      rule is asserted with). ``certainty`` drives the per-match ``confidence`` written to
+      the grounding SSSOM (code map ``RULE_CERTAINTY``/``RULE_PREDICATE`` mirrors these,
+      enforced by a test).
+
+      Applied in tier order (first single-id hit wins), with entity scoping:
+      ``base_normalization`` (always) -> ``punctuation``/``lexical_surgery`` (both) ->
+      ``spelling_en`` (both) -> ``spelling_inn`` + ``salt`` (drugs only) /
+      ``qualifier`` (diseases only) -> ``translation`` (both) -> ``fuzzy`` (both, last
+      resort). ``spelling_inn`` targets foreign INN transliterations (Russia/PMDA registries);
+      ``fuzzy`` is edit-distance-1 with a unique-hit guard — deterministic but approximate,
+      so its rows are proposals a curator should review, not silently trusted.
+    permissible_values:
+      # --- family: base (always applied; not recorded per row) ---
+      base_normalization:
+        description: "Unicode NFKD + diacritic drop, casefold, whitespace collapse, punctuation/bracket normalization. Always applied to both sides."
+        annotations: {certainty: 1.0, rule_family: base, predicate: skos:exactMatch}
+      # --- family: punctuation (structural, meaning-preserving) ---
+      comma_drop_type:
+        description: "'X, type N' -> 'X type N'."
+        annotations: {certainty: 0.98, rule_family: punctuation, predicate: skos:exactMatch}
+      hyphen_type:
+        description: "'type-N' -> 'type N'."
+        annotations: {certainty: 0.98, rule_family: punctuation, predicate: skos:exactMatch}
+      cell_hyphen_to_space:
+        description: "'T-cell' -> 'T cell' (closed token list)."
+        annotations: {certainty: 0.97, rule_family: punctuation, predicate: skos:exactMatch}
+      cell_space_to_hyphen:
+        description: "'T cell' -> 'T-cell' (closed token list)."
+        annotations: {certainty: 0.97, rule_family: punctuation, predicate: skos:exactMatch}
+      # --- family: lexical_surgery (minor semantic surgery) ---
+      disease_to_disorder:
+        description: "'disease' -> 'disorder'."
+        annotations: {certainty: 0.95, rule_family: lexical_surgery, predicate: skos:exactMatch}
+      disorder_to_disease:
+        description: "'disorder' -> 'disease'."
+        annotations: {certainty: 0.95, rule_family: lexical_surgery, predicate: skos:exactMatch}
+      arabic_to_roman:
+        description: "'<indicator> N' -> '<indicator> ROMAN' (indicator-guarded)."
+        annotations: {certainty: 0.95, rule_family: lexical_surgery, predicate: skos:exactMatch}
+      roman_to_arabic:
+        description: "'<indicator> ROMAN' -> '<indicator> N' (indicator-guarded)."
+        annotations: {certainty: 0.95, rule_family: lexical_surgery, predicate: skos:exactMatch}
+      strip_leading_other:
+        description: "'other X' -> 'X' (broadening)."
+        annotations: {certainty: 0.70, rule_family: lexical_surgery, predicate: skos:broadMatch}
+      # --- family: spelling_en (English variant) ---
+      brit_to_am:
+        description: "British -> American spelling (closed list)."
+        annotations: {certainty: 0.97, rule_family: spelling_en, predicate: skos:exactMatch}
+      am_to_brit:
+        description: "American -> British spelling (closed list)."
+        annotations: {certainty: 0.97, rule_family: spelling_en, predicate: skos:exactMatch}
+      # --- family: spelling_inn (foreign INN transliteration conventions; lever #1) ---
+      inn_suffix_in_to_ine:
+        description: "Foreign INN suffix '-in' -> '-ine' ('amlodipin' -> 'amlodipine'). Guarded against native -in drugs (insulin, heparin, warfarin)."
+        annotations: {certainty: 0.90, rule_family: spelling_inn, predicate: skos:closeMatch}
+      inn_z_to_s:
+        description: "Transliteration 'z' -> 's' ('methylprednizolone' -> 'methylprednisolone')."
+        annotations: {certainty: 0.88, rule_family: spelling_inn, predicate: skos:closeMatch}
+      inn_ph_to_f:
+        description: "'ph' -> 'f' transliteration variant."
+        annotations: {certainty: 0.88, rule_family: spelling_inn, predicate: skos:closeMatch}
+      inn_ti_to_thi:
+        description: "'ti' -> 'thi' ('hydrochlorotiazide' -> 'hydrochlorothiazide')."
+        annotations: {certainty: 0.85, rule_family: spelling_inn, predicate: skos:closeMatch}
+      inn_ae_oe_to_e:
+        description: "'ae'/'oe' -> 'e' transliteration variant."
+        annotations: {certainty: 0.90, rule_family: spelling_inn, predicate: skos:closeMatch}
+      # --- family: salt ---
+      salt_ester_strip:
+        description: "Strip a trailing salt/ester/hydrate word ('X sodium' -> 'X'; active moiety)."
+        annotations: {certainty: 0.90, rule_family: salt, predicate: skos:closeMatch}
+      # --- family: qualifier ---
+      qualifier_strip:
+        description: "Strip a leading clinical qualifier ('severe X' -> 'X'; broadening)."
+        annotations: {certainty: 0.75, rule_family: qualifier, predicate: skos:broadMatch}
+      # --- family: structural ---
+      combination_split:
+        description: "Split a combination/list ('A; B' -> ['A','B']) and ground each component."
+        annotations: {certainty: 0.92, rule_family: structural, predicate: skos:exactMatch}
+      # --- family: formulation (dose/form/release/pharmacopoeia noise around ingredients) ---
+      formulation_strip:
+        description: "Strip dose (150mg), dosage form (tablet/injection/cream), release (SR/ER/sustained release) and pharmacopoeia (USP/IP/BP) noise from a product string ('Ferrous Sulphate 150mg Sustained Release' -> 'ferrous sulphate'), then re-run the full ladder (composes with salt-strip + combination-split + fuzzy). Numeric-anchored + whole-word guarded so token-internal digits (B12, omega-3, vitamin D3) survive."
+        annotations: {certainty: 0.80, rule_family: formulation, predicate: skos:closeMatch}
+      # --- family: transliteration (foreign-script sources, e.g. Russia GRLS) ---
+      cyrillic_transliteration:
+        description: "Deterministic Russian Cyrillic -> Latin, then re-run the full ladder (composes with INN spelling + fuzzy). Recovers ~17% of GRLS names."
+        annotations: {certainty: 0.75, rule_family: transliteration, predicate: skos:closeMatch}
+      # --- family: fuzzy (lever #2; propose for curation, do not silently trust) ---
+      fuzzy_edit1_unique:
+        description: "Levenshtein edit-distance-1 match accepted only when it resolves to a single id in the top-priority vocab. Deterministic but approximate; written for curator review."
+        annotations: {certainty: 0.60, rule_family: fuzzy, predicate: skos:closeMatch}
+      # --- family: translation (lever #3; for genuinely foreign-language names) ---
+      translation_dictionary:
+        description: "Curated per-language term dictionary substitution (deterministic)."
+        annotations: {certainty: 0.85, rule_family: translation, predicate: skos:closeMatch}
+      translation_llm:
+        description: "LLM translation of a non-English name to English (deferred; non-deterministic; review-only)."
+        annotations: {certainty: 0.50, rule_family: translation, predicate: skos:closeMatch}
+      deepl_translation:
+        description: "DeepL machine translation of a non-English source name to English (via the babelon translator service; China zh, Russia ru). Recorded as a Babelon row keyed by the mention's MEDICNE id; the English translation_value is then handed to the grounder. Network-derived but cached in the git-tracked Babelon table (deterministic replay)."
+        annotations: {certainty: 0.85, rule_family: translation, predicate: skos:closeMatch}
+      # --- family: substance_resolver (product/formulation -> ingredient via an external substance vocab) ---
+      rxnorm_resolve:
+        description: "RxNav approximate-match resolves a product/formulation string to its ingredient INN, re-grounded to CHEBI/DRON. Network-derived, cached, curator-reviewable proposal written into the store (not run at resolve time)."
+        annotations: {certainty: 0.70, rule_family: substance_resolver, predicate: skos:closeMatch}
+  NormalizationQualityEnum:
+    description: How the initial ID maps to the canonical target ID.
+    permissible_values:
+      curated:
+        description: Manual assertion in the normalization SSSOM store.
+      asserted_exact:
+        description: Target namespace asserts an exact/db-xref mapping to normalized_id.
+      deprecated_replacement:
+        description: original_id obsolete, replaced_by normalized_id in the target namespace.
+      none:
+        description: No target-namespace-supported normalization; normalized_id equals original_id.
+  TranslatorExpertiseEnum:
+    description: Babelon translator expertise (who/what produced the translation).
+    permissible_values:
+      ALGORITHM:
+        description: Machine translation (e.g. DeepL).
+      LAYPERSON:
+        description: Non-expert human translator.
+      DOMAIN_STUDENT:
+        description: Trainee in the domain.
+      DOMAIN_EXPERT:
+        description: Subject-matter expert.
+      PROFESSIONAL_TRANSLATOR:
+        description: Professional human translator.
+      TECHNICAL_SPECIALIST:
+        description: Technical/terminology specialist.
+
+classes:
+  ProvenanceAgent:
+    description: >-
+      Who or what performed a step. Vendored fresh (distinct from MeDIC's evidence.Agent,
+      which has a different {curator_id, curator_type, name} shape). Always inlined.
+
+      `agent_version` pins the exact agent that ran — for an LLM this is the dated model id
+      (e.g. claude-haiku-4-5-20251001), which is the single most important thing to record:
+      model upgrades silently change extraction output (FAILURE_MODES 13.1), and without the
+      pin a re-run is not comparable to the run that produced the record.
+    slots: [agent_id, agent_type, agent_name, agent_version]
+  TextSpan:
+    description: >-
+      A chunk of source text a Mention was extracted from — a paragraph, sentence, or a
+      structured cell. Multivalued on Mention because one indication can be assembled from
+      two disconnected spans (a table reference, or a separate "Limitations of Use" scope).
+    slots: [text, source_reference, section_code]
+  TransformationStep:
+    abstract: true
+    description: >-
+      One named step on the path from a verbatim source value to a canonical id. Records
+      both its incoming (input_value) and outgoing (output_value) value — schema-level
+      enforcement of invariant I-8. Subclasses narrow quality/flags/applied_rules.
+    slots: [category, input_value, output_value, output_label, method, tool, tool_version,
+            agent, confidence, status, applied_rules, quality, flags, comment]
+  ExtractionStep:
+    is_a: TransformationStep
+    description: >-
+      Source text (or structured cell) -> the entity mention string. This step is about
+      **recognising the entity only** (named-entity recognition for free text; a verbatim
+      field read for structured sources). It deliberately says nothing about what claim the
+      mention participates in — that is the Assertion's job. `confidence` is how sure we are
+      that this string really denotes an entity occurring in `input_value`.
+    slot_usage:
+      quality: {range: ExtractionQuality}
+      flags: {range: ExtractionFlag}
+  TranslationStep:
+    is_a: TransformationStep
+    description: Foreign string -> English string.
+    slots: [source_language, target_language, predicate_id, translator_expertise]
+    slot_usage:
+      quality: {range: TranslationPrecision}
+      flags: {range: TranslationFlag}
+  GroundingStep:
+    is_a: TransformationStep
+    description: String -> initial ontology id.
+    slots: [match_field, predicate_id, source_vocabulary, components]
+    slot_usage:
+      quality: {range: GroundingQualityEnum}
+      flags: {range: GroundingFlag}
+      applied_rules: {range: PreprocessingRuleEnum}
+  NormalizationStep:
+    is_a: TransformationStep
+    description: Initial id -> canonical target id.
+    slots: [target_namespace, mapping_justification]
+    slot_usage:
+      quality: {range: NormalizationQualityEnum}
+      flags: {range: NormalizationFlag}
+  Resolution:
+    description: >-
+      The transformation container: the aggregate input_value -> output_value of the whole
+      chain, an aggregate confidence (the product of the step confidences), and the ordered
+      pipeline of steps. Chaining invariant: input_value == pipeline[0].input_value,
+      output_value == pipeline[-1].output_value (== the Mention's resolved_id), and each
+      step's output_value equals the next step's input_value.
+    slots: [input_value, output_value, confidence, pipeline]
+  Assertion:
+    description: >-
+      How a **claim** (a relation between entities) was derived from a source — the
+      relation-extraction counterpart to a Mention's entity recognition. Kept separate on
+      purpose: a Mention answers "what entity is this string?", an Assertion answers "what
+      is the source claiming about it?". The relation itself is named by the record that
+      owns the Assertion (e.g. IndicationAssociation.relationship_type), not repeated here.
+
+      `confidence` is how well the source text supports the claim; `flags` record
+      relation-level failure modes (negated, over-extracted, wrong section, wrong pairing).
+    slots: [input_value, method, tool, tool_version, agent, confidence, status,
+            negation_cue, flags, comment]
+    slot_usage:
+      input_value:
+        required: false
+        description: The supporting quote from the source that the claim was read from.
+      flags: {range: AssertionFlag}
+  Mention:
+    description: >-
+      A resolved source mention: its verbatim literal + stable id, the source spans it was
+      drawn from, its resolution container (the ordered pipeline), and the resolved
+      canonical id/label. Read original_literal + resolved_id for the quick answer, or walk
+      resolution.pipeline for the full audit (via each step's flags).
+    slots: [id, original_literal, entity_type, source_language, mention_source,
+            source_spans, resolution, resolved_id, resolved_label]
+
+slots:
+  # --- ProvenanceAgent ---
+  agent_id:
+    range: uriorcurie
+    description: Identifier of the agent (e.g. wikidata:Q116709136 for DeepL). Optional.
+  agent_type:
+    range: AgentTypeEnum
+    description: HUMAN or AI_AGENT.
+  agent_name:
+    description: Human-readable agent name.
+  agent_version:
+    description: >-
+      Version of the agent that ran the step. For an LLM this is the dated model id
+      (e.g. "claude-haiku-4-5-20251001"); for a service, its released version. Empty when
+      the agent publishes no version (e.g. a hosted API with no version surface).
+  # --- TextSpan ---
+  text:
+    required: true
+    description: The source text chunk (paragraph, sentence, or structured cell).
+  source_reference:
+    description: Document id the span came from (e.g. DailyMed:<setid>, a CSV path).
+  section_code:
+    description: Section within that document (e.g. LOINC:34067-9, a column name).
+  # --- TransformationStep (shared) ---
+  category:
+    range: TransformationCategory
+    required: true
+    description: Discriminator so a heterogeneous steps[] list is readable.
+  input_value:
+    required: true
+    description: I-8 incoming value (verbatim; never mutated, I-7).
+  output_value:
+    description: I-8 outgoing value ('' if the step failed).
+  output_label:
+    description: Human-readable label of output_value (e.g. the grounded/normalized term label).
+  method:
+    range: TransformationMethod
+    required: true
+    description: How the step was performed.
+  tool:
+    description: Tool name, e.g. "DeepL", "medic-lexical-grounder".
+  tool_version:
+    description: Version of the tool that ran this step, e.g. "1", "1.3".
+  agent:
+    range: ProvenanceAgent
+    inlined: true
+    description: Who/what ran the step.
+  confidence:
+    range: float
+    minimum_value: 0.0
+    maximum_value: 1.0
+    description: 0-1 step confidence.
+  status:
+    range: StepStatus
+    description: Curation lifecycle state.
+  applied_rules:
+    multivalued: true
+    description: Named transforms applied (subclasses narrow the range).
+  quality:
+    description: Stage outcome (subclasses narrow to their enum).
+  flags:
+    multivalued: true
+    description: Detected failure-mode signals (subclasses narrow).
+  comment:
+    description: Free-text note.
+  # --- Assertion (relation-level claim provenance) ---
+  assertion:
+    range: Assertion
+    inlined: true
+    description: How the claim (the asserted relation) was derived from the source.
+  negation_cue:
+    description: The negation cue found in the source, if the claim was stated negatively.
+  # --- TranslationStep extras ---
+  source_language:
+    description: ISO code of the source value (e.g. zh, ru).
+  target_language:
+    description: ISO code of the translation (e.g. en-us).
+  predicate_id:
+    range: uriorcurie
+    description: Mapping predicate for this step (e.g. skos:exactMatch, rdfs:label).
+  translator_expertise:
+    range: TranslatorExpertiseEnum
+    description: Who/what produced the translation.
+  # --- GroundingStep extras ---
+  grounded_label:
+    description: (legacy grounding.yaml Grounding class) Canonical label of the grounded id.
+  match_field:
+    description: Which vocabulary field matched (label / synonym).
+  source_vocabulary:
+    description: Vocabulary the initial id came from (CHEBI, MONDO, ...).
+  components:
+    range: uriorcurie
+    multivalued: true
+    description: Component ids when the string is a combination.
+  # --- NormalizationStep extras ---
+  normalized_label:
+    description: (legacy grounding.yaml Normalization class) Canonical label of the normalized id.
+  target_namespace:
+    description: Canonical target namespace (MONDO, CHEBI).
+  mapping_justification:
+    description: Why the normalization mapping holds (e.g. asserted xref).
+  # --- Resolution (the container) ---
+  resolution:
+    range: Resolution
+    inlined: true
+    description: The transformation container (aggregate input/output/confidence + the pipeline).
+  pipeline:
+    range: TransformationStep
+    multivalued: true
+    inlined_as_list: true
+    description: "Ordered steps: ExtractionStep? -> TranslationStep? -> GroundingStep -> NormalizationStep?"
+  # --- Mention ---
+  id:
+    range: uriorcurie
+    required: true
+    description: >-
+      Stable mention id (MeDIC: MEDICNE:<uuid5>) — the SSSOM subject and cross-source dedup
+      key, NOT a cross-record join pointer.
+  original_literal:
+    required: true
+    description: Verbatim source string (I-7).
+  entity_type:
+    description: e.g. drug / disease.
+  mention_source:
+    description: Originating source name (e.g. CDE, DailyMed, ORANGEBOOK).
+  source_spans:
+    range: TextSpan
+    multivalued: true
+    inlined_as_list: true
+    description: Source text this mention was drawn from (the pipeline's input_value quotes it).
+  resolved_id:
+    range: uriorcurie
+    description: Final canonical id (== resolution.output_value).
+  resolved_label:
+    description: Label of resolved_id.
