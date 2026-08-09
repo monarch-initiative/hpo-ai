@@ -1,0 +1,19 @@
+{
+  "branch_id": "HP:0010876",
+  "branch_label": "Abnormal circulating protein concentration",
+  "total_terms": 172,
+  "total_packets": 172,
+  "auto_approved": 0,
+  "needs_review": 88,
+  "skipped": 84,
+  "avg_confidence": 0.4159883720930236,
+  "pattern_distribution": {
+    "abnormallyIncreasedLevelOfChemicalEntityInBlood": 57,
+    "abnormallyDecreasedLevelOfChemicalEntityInBlood": 42,
+    "abnormalLevelOfChemicalEntityInBlood": 34,
+    "activity": 32,
+    "abnormallyDecreasedLevelOfChemicalEntityInLocation": 3,
+    "abnormallyIncreasedLevelOfChemicalEntityInLocation": 3,
+    "modifier": 1
+  }
+}

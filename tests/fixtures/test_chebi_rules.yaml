@@ -1,0 +1,28 @@
+# Test fixture for CHEBI selection rules
+curated_mappings:
+  - chemical_name: calcium
+    chebi_id: "CHEBI:22984"
+    chebi_label: calcium atom
+    aliases: ["Ca", "Ca2+", "calcium ion"]
+    rationale: "Per upheno#946, HPO uses atom forms"
+
+  - chemical_name: glucose
+    chebi_id: "CHEBI:17234"
+    chebi_label: glucose
+    aliases: ["D-glucose", "blood sugar"]
+
+  - chemical_name: potassium
+    chebi_id: "CHEBI:26216"
+    chebi_label: potassium atom
+    aliases: ["K", "K+"]
+
+abbreviations:
+  LDL:
+    entity_id: "CHEBI:47774"
+    entity_label: low-density lipoprotein cholesterol
+  HDL:
+    entity_id: "CHEBI:47775"
+    entity_label: high-density lipoprotein cholesterol
+  CK:
+    entity_id: "PR:000050097"
+    entity_label: creatine kinase

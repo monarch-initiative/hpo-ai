@@ -1,0 +1,648 @@
+[
+  {
+    "id": "pkt_83218871860b",
+    "hp_term": {
+      "id": "HP:0033307",
+      "label": "Increased circulating fetuin A concentration",
+      "definition": "An elevation above normal of fetuin A in the blood circulation.",
+      "parents": [
+        "HP:0033305"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyIncreasedLevelOfChemicalEntityInBlood",
+      "direction": "increased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected increased/elevated pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_9c035dbb2a7e",
+      "proposed_label": "Elevated circulating fetuin A concentration",
+      "proposed_definition": "The concentration of fetuin A in the blood circulation is above the upper limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Increased circulating fetuin A concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased fetuin A level",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated fetuin A level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased fetuin A concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated fetuin A concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased fetuin A level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated fetuin A level in blood",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "full_refactor",
+      "label_diff": "'Increased circulating fetuin A concentration' -> 'Elevated circulating fetuin A concentration'",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.45,
+    "review_status": "skipped",
+    "created_at": "2026-08-09T05:18:12.397376Z"
+  },
+  {
+    "id": "pkt_7e5d4a06e07d",
+    "hp_term": {
+      "id": "HP:0020180",
+      "label": "Elevated haptoglobin level",
+      "definition": "An abnormally high concentration of haptoglobin in the blood circulation. Haptoglobin is an acute-phase reactant whose levels can become elevated in the presence of infection and inflammation.",
+      "parents": [
+        "HP:0020179"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyIncreasedLevelOfChemicalEntityInBlood",
+      "direction": "increased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected increased/elevated pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_cee08af3dc02",
+      "proposed_label": "Elevated circulating haptoglobin concentration",
+      "proposed_definition": "The concentration of haptoglobin in the blood circulation is above the upper limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Elevated haptoglobin level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased haptoglobin level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased haptoglobin concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated haptoglobin concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased haptoglobin level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated haptoglobin level in blood",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "full_refactor",
+      "label_diff": "'Elevated haptoglobin level' -> 'Elevated circulating haptoglobin concentration'",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.44999999999999996,
+    "review_status": "skipped",
+    "created_at": "2026-08-09T05:18:12.397469Z"
+  },
+  {
+    "id": "pkt_62b218bd084f",
+    "hp_term": {
+      "id": "HP:0032240",
+      "label": "Elevated circulating E selectin level",
+      "definition": "An increased concentration of E selectin in the blood circulation.",
+      "parents": [
+        "HP:0010876"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyIncreasedLevelOfChemicalEntityInBlood",
+      "direction": "increased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected increased/elevated pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_64989dac8f72",
+      "proposed_label": "Elevated circulating E selectin concentration",
+      "proposed_definition": "The concentration of E selectin in the blood circulation is above the upper limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Elevated circulating E selectin level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased E selectin level",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated E selectin level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased E selectin concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated E selectin concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased E selectin level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated E selectin level in blood",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "full_refactor",
+      "label_diff": "'Elevated circulating E selectin level' -> 'Elevated circulating E selectin concentration'",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.45,
+    "review_status": "skipped",
+    "created_at": "2026-08-09T05:18:12.397612Z"
+  },
+  {
+    "id": "pkt_36ff76b1934b",
+    "hp_term": {
+      "id": "HP:0031037",
+      "label": "Reduced insulin-like factor 3 level",
+      "definition": "Blood concentration of insulin-like factor 3 (ILF3) is below normal limits.",
+      "synonyms": [
+        {
+          "value": "Reduced plasma INSL3 level",
+          "scope": "exact"
+        }
+      ],
+      "parents": [
+        "HP:0010876"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyDecreasedLevelOfChemicalEntityInBlood",
+      "direction": "decreased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected decreased/reduced pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_34d594b34dec",
+      "proposed_label": "Decreased circulating insulin-like factor 3 concentration",
+      "proposed_definition": "The concentration of insulin-like factor 3 in the blood circulation is below the lower limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Reduced insulin-like factor 3 level",
+          "scope": "exact"
+        },
+        {
+          "value": "Decreased insulin-like factor 3 level",
+          "scope": "exact"
+        },
+        {
+          "value": "Decreased insulin-like factor 3 concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Reduced insulin-like factor 3 concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Decreased insulin-like factor 3 level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Reduced insulin-like factor 3 level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Reduced plasma INSL3 level",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "full_refactor",
+      "label_diff": "'Reduced insulin-like factor 3 level' -> 'Decreased circulating insulin-like factor 3 concentration'",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.44999999999999996,
+    "review_status": "skipped",
+    "created_at": "2026-08-09T05:18:12.397776Z"
+  },
+  {
+    "id": "pkt_5df3920d0748",
+    "hp_term": {
+      "id": "HP:0033112",
+      "label": "Elevated circulating apolipoprotein C-III concentration",
+      "definition": "An increased concentration in blood of apolipoprotein C-III, a protein component of triglyceride (TG)-rich lipoproteins (TRLs) including very low density lipoproteins (VLDL), high density lipoproteins (HDL) and chylomicrons.",
+      "synonyms": [
+        {
+          "value": "Elevated apolipoprotein C-III level",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated APOC3 level",
+          "scope": "exact"
+        }
+      ],
+      "parents": [
+        "HP:0033460"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyIncreasedLevelOfChemicalEntityInBlood",
+      "direction": "increased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected increased/elevated pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_6bea91d14992",
+      "proposed_label": "Elevated circulating apolipoprotein C-III concentration",
+      "proposed_definition": "The concentration of apolipoprotein C-III in the blood circulation is above the upper limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Elevated circulating apolipoprotein C-III concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased apolipoprotein C-III level",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated apolipoprotein C-III level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased apolipoprotein C-III concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated apolipoprotein C-III concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased apolipoprotein C-III level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated apolipoprotein C-III level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated APOC3 level",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "definition_only",
+      "label_diff": "No change",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.5,
+    "review_status": "needs_review",
+    "created_at": "2026-08-09T05:18:12.397871Z"
+  },
+  {
+    "id": "pkt_4c58d0d5a64e",
+    "hp_term": {
+      "id": "HP:0033300",
+      "label": "Increased circulating complement factor H related protein 1 concentration",
+      "definition": "Elevated level of circulating complement factor H related protein 1 concentration in the blood circulation.",
+      "parents": [
+        "HP:0033298"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyIncreasedLevelOfChemicalEntityInBlood",
+      "direction": "increased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected increased/elevated pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_1a1b4b92f5a7",
+      "proposed_label": "Elevated circulating complement factor H related protein 1 concentration",
+      "proposed_definition": "The concentration of complement factor H related protein 1 in the blood circulation is above the upper limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Increased circulating complement factor H related protein 1 concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased complement factor H related protein 1 level",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated complement factor H related protein 1 level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased complement factor H related protein 1 concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated complement factor H related protein 1 concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased complement factor H related protein 1 level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated complement factor H related protein 1 level in blood",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "full_refactor",
+      "label_diff": "'Increased circulating complement factor H related protein 1 concentration' -> 'Elevated circulating complement factor H related protein 1 concentration'",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.45,
+    "review_status": "skipped",
+    "created_at": "2026-08-09T05:18:12.397982Z"
+  },
+  {
+    "id": "pkt_06451b19339c",
+    "hp_term": {
+      "id": "HP:6000001",
+      "label": "Elevated circulating DNAJB9 protein concentration",
+      "definition": "Concentration of DnaJ homolog subfamily B member 9 (DNAJB9) in the blood circulation above the upper limit of normal.",
+      "synonyms": [
+        {
+          "value": "DNAJB9 protein level in serum elevated",
+          "scope": "exact"
+        }
+      ],
+      "parents": [
+        "HP:0010876"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyIncreasedLevelOfChemicalEntityInBlood",
+      "direction": "increased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected increased/elevated pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_1f3211f72c0f",
+      "proposed_label": "Elevated circulating DNAJB9 protein concentration",
+      "proposed_definition": "The concentration of DNAJB9 protein in the blood circulation is above the upper limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Elevated circulating DNAJB9 protein concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased DNAJB9 protein level",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated DNAJB9 protein level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased DNAJB9 protein concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated DNAJB9 protein concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased DNAJB9 protein level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated DNAJB9 protein level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "DNAJB9 protein level in serum elevated",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "definition_only",
+      "label_diff": "No change",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.5,
+    "review_status": "needs_review",
+    "created_at": "2026-08-09T05:18:12.398061Z"
+  },
+  {
+    "id": "pkt_53782c255558",
+    "hp_term": {
+      "id": "HP:0410288",
+      "label": "Hyperamylasemia",
+      "definition": "The concentration of amylase in the blood circulation is above the upper limit of normal.",
+      "synonyms": [
+        {
+          "value": "Increased circulating amylase level",
+          "scope": "exact"
+        }
+      ],
+      "parents": [
+        "HP:0410282"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyIncreasedLevelOfChemicalEntityInBlood",
+      "direction": "increased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected increased/elevated pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_29a40ae33e51",
+      "proposed_label": "Elevated circulating amylase concentration",
+      "proposed_definition": "The concentration of amylase in the blood circulation is above the upper limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Hyperamylasemia",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased amylase level",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated amylase level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased amylase concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated amylase concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased amylase level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated amylase level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased circulating amylase level",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "label_only",
+      "label_diff": "'Hyperamylasemia' -> 'Elevated circulating amylase concentration'",
+      "definition_diff": "No change"
+    },
+    "overall_confidence": 0.44999999999999996,
+    "review_status": "skipped",
+    "created_at": "2026-08-09T05:18:12.398129Z"
+  },
+  {
+    "id": "pkt_eb3350295c9c",
+    "hp_term": {
+      "id": "HP:0025346",
+      "label": "Increased circulating beta-2-microglobulin level",
+      "definition": "Elevated concentration of beta-2-microglobulin in the blood.",
+      "synonyms": [
+        {
+          "value": "Elevated circulating beta-2-microglobulin level",
+          "scope": "exact"
+        }
+      ],
+      "parents": [
+        "HP:0025345"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormallyIncreasedLevelOfChemicalEntityInBlood",
+      "direction": "increased",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.8999999999999999,
+      "rationale": "Detected increased/elevated pattern; Location: blood"
+    },
+    "proposal": {
+      "id": "prop_210834e050fd",
+      "proposed_label": "Elevated circulating beta-2-microglobulin concentration",
+      "proposed_definition": "The concentration of beta-2-microglobulin in the blood circulation is above the upper limit of normal.",
+      "proposed_synonyms": [
+        {
+          "value": "Increased circulating beta-2-microglobulin level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased beta-2-microglobulin level",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated beta-2-microglobulin level",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased beta-2-microglobulin concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated beta-2-microglobulin concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Increased beta-2-microglobulin level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated beta-2-microglobulin level in blood",
+          "scope": "exact"
+        },
+        {
+          "value": "Elevated circulating beta-2-microglobulin level",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "full_refactor",
+      "label_diff": "'Increased circulating beta-2-microglobulin level' -> 'Elevated circulating beta-2-microglobulin concentration'",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.45,
+    "review_status": "skipped",
+    "created_at": "2026-08-09T05:18:12.398210Z"
+  },
+  {
+    "id": "pkt_62f72ba82d62",
+    "hp_term": {
+      "id": "HP:0025201",
+      "label": "Abnormal circulating apolipoprotein concentration",
+      "definition": "A deviation from the normal concentration in blood of an apolipoprotein, i.e., of a protein that binds lipids to form lipoprotein and is thereby responsible for the transport of lipids in the blood and lymph circulation.",
+      "synonyms": [
+        {
+          "value": "Abnormal apolipoprotein level",
+          "scope": "exact"
+        }
+      ],
+      "parents": [
+        "HP:0010876"
+      ]
+    },
+    "pattern_assignment": {
+      "pattern_name": "abnormalLevelOfChemicalEntityInBlood",
+      "direction": "abnormal",
+      "location_id": "UBERON:0000178",
+      "location_label": "blood",
+      "confidence": 0.7999999999999999,
+      "rationale": "Direction not specified (abnormal); Location: blood"
+    },
+    "proposal": {
+      "id": "prop_8f85bc4b7929",
+      "proposed_label": "Abnormal circulating apolipoprotein concentration",
+      "proposed_definition": "Any deviation from the normal concentration of apolipoprotein in the blood circulation.",
+      "proposed_synonyms": [
+        {
+          "value": "Abnormal circulating apolipoprotein concentration",
+          "scope": "exact"
+        },
+        {
+          "value": "Abnormal apolipoprotein level",
+          "scope": "exact"
+        },
+        {
+          "value": "Abnormal apolipoprotein concentration",
+          "scope": "exact"
+        }
+      ],
+      "proposed_location": "UBERON:0000178",
+      "change_type": "definition_only",
+      "label_diff": "No change",
+      "definition_diff": "Definition updated"
+    },
+    "overall_confidence": 0.5,
+    "review_status": "needs_review",
+    "created_at": "2026-08-09T05:18:12.398286Z"
+  }
+]

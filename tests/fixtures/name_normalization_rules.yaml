@@ -1,0 +1,38 @@
+# Name normalization rules for chemical/protein entity labels.
+#
+# Derived from the HPO build SPARQL:
+#   src/sparql/update-chemical-labels.ru
+#
+# Rules are applied in order: generic_cleanups first, then specific_renames.
+
+generic_cleanups:
+  - pattern: " atom$"
+    replacement: ""
+  - pattern: " molecular entity$"
+    replacement: ""
+  - pattern: " \\(human\\)"
+    replacement: ""
+
+specific_renames:
+  - old: "alpha-2-HS-glycoprotein"
+    new: "fetuin-A"
+  - old: "serotransferrin"
+    new: "transferrin"
+  - old: "chitinase-3-like protein 1"
+    new: "CHI3L1"
+  - old: "insulin-like growth factor-binding protein complex acid labile subunit"
+    new: "insulin-like growth factor-binding protein acid labile subunit"
+  - old: "transthyretin"
+    new: "prealbumin"
+  - old: "B-type"
+    new: "BB isoform"
+  - old: "M-type"
+    new: "MM isoform"
+  - old: "C-C motif chemokine 18"
+    new: "CCL18"
+  - old: "DnaJ homolog subfamily B member 9"
+    new: "DNAJB9"
+  - old: "72 kDa type IV collagenase"
+    new: "matrix metalloproteinase 2"
+  - old: "serine protease 1"
+    new: "cationic trypsinogen"

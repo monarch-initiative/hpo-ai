@@ -1,0 +1,20 @@
+Prefix(:=<http://purl.obolibrary.org/obo/hp.owl#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+Ontology(<http://purl.obolibrary.org/obo/hp.owl>
+
+Declaration(Class(<http://purl.obolibrary.org/obo/HP_0002490>))
+# Class: <http://purl.obolibrary.org/obo/HP_0002490> (Increased CSF lactate)
+AnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> <http://purl.obolibrary.org/obo/HP_0002490> "Hyperlactatorachia")
+AnnotationAssertion(rdfs:label <http://purl.obolibrary.org/obo/HP_0002490> "Increased CSF lactate")
+
+Declaration(Class(<http://purl.obolibrary.org/obo/HP_0500220>))
+# Class: <http://purl.obolibrary.org/obo/HP_0500220> (Increased CSF tyrosine concentration)
+AnnotationAssertion(rdfs:label <http://purl.obolibrary.org/obo/HP_0500220> "Increased CSF tyrosine concentration")
+
+Declaration(Class(<http://purl.obolibrary.org/obo/HP_0000001>))
+# Class: <http://purl.obolibrary.org/obo/HP_0000001> (All)
+AnnotationAssertion(rdfs:label <http://purl.obolibrary.org/obo/HP_0000001> "All")
+)
