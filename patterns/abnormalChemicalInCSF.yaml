@@ -1,0 +1,23 @@
+id: abnormalChemicalInCSF
+description: Abnormal concentration of a chemical entity in cerebrospinal fluid.
+selector:
+  direction: abnormal
+  location: UBERON:0001359
+qualifier: CSF
+vars:
+  chemical:
+    range: CHEBI:24431
+    allow_string: true
+  location:
+    range: UBERON:0001359
+    fixed: true
+name: Abnormal CSF {chemical} concentration
+definition: Any deviation from the normal concentration of {chemical} in the cerebrospinal fluid.
+synonyms:
+- scope: exact
+  text: Abnormal {chemical} concentration
+- scope: exact
+  text: Abnormal {chemical} level
+- scope: exact
+  text: Abnormal CSF {chemical} level
+equivalentTo: ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000051> ObjectIntersectionOf(<http://purl.obolibrary.org/obo/PATO_0000070> ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0000052> ObjectIntersectionOf({chemical} ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050> {location}))) ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0002573> <http://purl.obolibrary.org/obo/PATO_0000460>)))

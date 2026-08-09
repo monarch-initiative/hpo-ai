@@ -1,0 +1,49 @@
+pattern_name: abnormalLevelOfChemicalEntityInBlood
+pattern_iri: https://w3id.org/obophenotype/hpo-ai/patterns/abnormalLevelOfChemicalEntityInBlood
+
+description: >-
+  Pattern for phenotypes describing abnormal concentration of a chemical
+  entity in the blood circulation (direction unspecified).
+
+classes:
+  chemical_entity: CHEBI:24431
+  blood: UBERON:0000178
+  phenotype: UPHENO:0001001
+  abnormal: PATO:0000460
+
+relations:
+  has_part: BFO:0000051
+  inheres_in: RO:0000052
+  towards: RO:0000080
+  part_of: BFO:0000050
+
+annotationProperties:
+  exact_synonym: oio:hasExactSynonym
+
+vars:
+  chemical: "'chemical_entity'"
+
+name:
+  text: "Abnormal circulating %s concentration"
+  vars:
+    - chemical
+
+def:
+  text: "Any deviation from the normal concentration of %s in the blood circulation."
+  vars:
+    - chemical
+
+equivalentTo:
+  text: "'phenotype' and ('has part' some ('abnormal' and ('inheres in' some (%s and ('part of' some 'blood')))))"
+  vars:
+    - chemical
+
+annotations:
+  - annotationProperty: exact_synonym
+    text: "Abnormal %s level"
+    vars:
+      - chemical
+  - annotationProperty: exact_synonym
+    text: "Abnormal %s concentration"
+    vars:
+      - chemical

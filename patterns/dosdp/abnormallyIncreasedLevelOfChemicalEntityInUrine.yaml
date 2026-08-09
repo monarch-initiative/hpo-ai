@@ -1,0 +1,48 @@
+pattern_name: abnormallyIncreasedLevelOfChemicalEntityInUrine
+pattern_iri: https://w3id.org/obophenotype/hpo-ai/patterns/abnormallyIncreasedLevelOfChemicalEntityInUrine
+
+description: >-
+  Pattern for phenotypes describing elevated concentration of a chemical
+  entity in the urine.
+
+classes:
+  chemical_entity: CHEBI:24431
+  urine: UBERON:0001088
+  phenotype: UPHENO:0001001
+  increased_amount: PATO:0000470
+
+relations:
+  has_part: BFO:0000051
+  inheres_in: RO:0000052
+  part_of: BFO:0000050
+
+annotationProperties:
+  exact_synonym: oio:hasExactSynonym
+
+vars:
+  chemical: "'chemical_entity'"
+
+name:
+  text: "Elevated urinary %s concentration"
+  vars:
+    - chemical
+
+def:
+  text: "The concentration of %s in the urine is above the upper limit of normal."
+  vars:
+    - chemical
+
+equivalentTo:
+  text: "'phenotype' and ('has part' some ('increased amount' and ('inheres in' some (%s and ('part of' some 'urine')))))"
+  vars:
+    - chemical
+
+annotations:
+  - annotationProperty: exact_synonym
+    text: "Increased urinary %s level"
+    vars:
+      - chemical
+  - annotationProperty: exact_synonym
+    text: "%suria"
+    vars:
+      - chemical

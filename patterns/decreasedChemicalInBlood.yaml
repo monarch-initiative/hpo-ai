@@ -1,0 +1,23 @@
+id: decreasedChemicalInBlood
+description: Decreased concentration of a chemical entity in blood circulation.
+selector:
+  direction: decreased
+  location: UBERON:0000178
+qualifier: circulating
+vars:
+  chemical:
+    range: CHEBI:24431
+    allow_string: true
+  location:
+    range: UBERON:0000178
+    fixed: true
+name: Decreased circulating {chemical} concentration
+definition: The concentration of {chemical} in the blood circulation is below the lower limit of normal.
+synonyms:
+- scope: exact
+  text: Decreased {chemical} concentration
+- scope: exact
+  text: Decreased {chemical} level
+- scope: exact
+  text: Decreased circulating {chemical} level
+equivalentTo: ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000051> ObjectIntersectionOf(<http://purl.obolibrary.org/obo/PATO_0001997> ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0000052> ObjectIntersectionOf({chemical} ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050> {location}))) ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0002573> <http://purl.obolibrary.org/obo/PATO_0000460>)))

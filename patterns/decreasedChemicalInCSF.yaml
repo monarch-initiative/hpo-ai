@@ -1,0 +1,23 @@
+id: decreasedChemicalInCSF
+description: Decreased concentration of a chemical entity in cerebrospinal fluid.
+selector:
+  direction: decreased
+  location: UBERON:0001359
+qualifier: CSF
+vars:
+  chemical:
+    range: CHEBI:24431
+    allow_string: true
+  location:
+    range: UBERON:0001359
+    fixed: true
+name: Decreased CSF {chemical} concentration
+definition: The concentration of {chemical} in the cerebrospinal fluid is below the lower limit of normal.
+synonyms:
+- scope: exact
+  text: Decreased {chemical} concentration
+- scope: exact
+  text: Decreased {chemical} level
+- scope: exact
+  text: Decreased CSF {chemical} level
+equivalentTo: ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000051> ObjectIntersectionOf(<http://purl.obolibrary.org/obo/PATO_0001997> ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0000052> ObjectIntersectionOf({chemical} ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050> {location}))) ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0002573> <http://purl.obolibrary.org/obo/PATO_0000460>)))

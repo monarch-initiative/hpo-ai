@@ -1,0 +1,23 @@
+id: increasedChemicalInUrine
+description: Elevated concentration of a chemical entity in urine.
+selector:
+  direction: increased
+  location: UBERON:0001088
+qualifier: urinary
+vars:
+  chemical:
+    range: CHEBI:24431
+    allow_string: true
+  location:
+    range: UBERON:0001088
+    fixed: true
+name: Elevated urinary {chemical} concentration
+definition: The concentration of {chemical} in the urine is above the upper limit of normal.
+synonyms:
+- scope: exact
+  text: Increased {chemical} concentration
+- scope: exact
+  text: Elevated {chemical} level
+- scope: exact
+  text: Elevated urinary {chemical} level
+equivalentTo: ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000051> ObjectIntersectionOf(<http://purl.obolibrary.org/obo/PATO_0000470> ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0000052> ObjectIntersectionOf({chemical} ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/BFO_0000050> {location}))) ObjectSomeValuesFrom(<http://purl.obolibrary.org/obo/RO_0002573> <http://purl.obolibrary.org/obo/PATO_0000460>)))
