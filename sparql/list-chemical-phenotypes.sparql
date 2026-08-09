@@ -1,0 +1,47 @@
+# SPARQL query to list chemical phenotypes in HPO
+# This query finds HP terms that are likely chemical concentration phenotypes
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+
+SELECT DISTINCT ?term ?label ?definition ?chebi ?uberon
+WHERE {
+  # Get HP terms
+  ?term a owl:Class .
+  ?term rdfs:label ?label .
+
+  # Must be under Abnormality of metabolism/homeostasis
+  ?term rdfs:subClassOf* obo:HP_0001939 .
+
+  # Optional definition
+  OPTIONAL { ?term obo:IAO_0000115 ?definition }
+
+  # Optional existing CHEBI reference
+  OPTIONAL {
+    ?term owl:equivalentClass ?equiv .
+    ?equiv owl:intersectionOf ?list .
+    ?list rdf:rest*/rdf:first ?restriction .
+    ?restriction a owl:Restriction .
+    ?restriction owl:someValuesFrom ?chebi .
+    FILTER(STRSTARTS(STR(?chebi), "http://purl.obolibrary.org/obo/CHEBI_"))
+  }
+
+  # Optional existing UBERON reference
+  OPTIONAL {
+    ?term owl:equivalentClass ?equiv .
+    ?equiv owl:intersectionOf ?list .
+    ?list rdf:rest*/rdf:first ?restriction .
+    ?restriction a owl:Restriction .
+    ?restriction owl:someValuesFrom ?uberon .
+    FILTER(STRSTARTS(STR(?uberon), "http://purl.obolibrary.org/obo/UBERON_"))
+  }
+
+  # Filter to likely chemical phenotypes based on label patterns
+  FILTER(
+    REGEX(?label, "(concentration|level|circulating|emia$|uria$)", "i") ||
+    REGEX(?label, "^(Hyper|Hypo|Elevated|Decreased|Increased|Reduced)", "i")
+  )
+}
+ORDER BY ?label

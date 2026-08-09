@@ -1,0 +1,161 @@
+# CHEBI Selection Rules for HPO Chemical Phenotypes
+#
+# This file consolidates all deterministic chemical → CHEBI/PRO mappings.
+# Previously these were split across:
+#   - chebi.py COMMON_ABBREVIATIONS dict
+#   - chebi.py PREFERRED_FORMS dict
+#   - conf/config.yaml abbreviations & preferred_chebi_forms sections
+#
+# Resolution order: abbreviations first, then curated_mappings, then OAK search.
+
+# ──────────────────────────────────────────────────────────────────────
+# Curated Mappings
+# ──────────────────────────────────────────────────────────────────────
+# Known chemicals with a definitive correct CHEBI ID.
+# Per upheno#946, HPO uses atom forms (not ions) for elements.
+
+curated_mappings:
+  # Elements — prefer atom forms
+  - chemical_name: calcium
+    chebi_id: "CHEBI:22984"
+    chebi_label: calcium atom
+    aliases: ["Ca", "Ca2+", "calcium ion", "calcium(2+)"]
+    rationale: "Per upheno#946, HPO uses atom forms"
+
+  - chemical_name: potassium
+    chebi_id: "CHEBI:26216"
+    chebi_label: potassium atom
+    aliases: ["K", "K+", "potassium ion", "potassium(1+)"]
+    rationale: "Per upheno#946, HPO uses atom forms"
+
+  - chemical_name: sodium
+    chebi_id: "CHEBI:26708"
+    chebi_label: sodium atom
+    aliases: ["Na", "Na+", "sodium ion", "sodium(1+)"]
+    rationale: "Per upheno#946, HPO uses atom forms"
+
+  - chemical_name: magnesium
+    chebi_id: "CHEBI:25107"
+    chebi_label: magnesium atom
+    aliases: ["Mg", "Mg2+", "magnesium ion", "magnesium(2+)"]
+    rationale: "Per upheno#946, HPO uses atom forms"
+
+  - chemical_name: iron
+    chebi_id: "CHEBI:18248"
+    chebi_label: iron atom
+    aliases: ["Fe", "Fe2+", "Fe3+", "iron ion", "iron(2+)", "iron(3+)"]
+    rationale: "Per upheno#946, HPO uses atom forms"
+
+  - chemical_name: copper
+    chebi_id: "CHEBI:28694"
+    chebi_label: copper atom
+    aliases: ["Cu", "Cu2+", "copper ion", "copper(2+)"]
+    rationale: "Per upheno#946, HPO uses atom forms"
+
+  - chemical_name: zinc
+    chebi_id: "CHEBI:27363"
+    chebi_label: zinc atom
+    aliases: ["Zn", "Zn2+", "zinc ion", "zinc(2+)"]
+    rationale: "Per upheno#946, HPO uses atom forms"
+
+  - chemical_name: chloride
+    chebi_id: "CHEBI:17996"
+    chebi_label: chloride
+    aliases: ["Cl-", "chloride ion"]
+    rationale: "Use chloride (not chlorine atom) for HPO"
+
+  # Common metabolites
+  - chemical_name: glucose
+    chebi_id: "CHEBI:17234"
+    chebi_label: glucose
+    aliases: ["D-glucose", "blood sugar", "dextrose"]
+
+  - chemical_name: urea
+    chebi_id: "CHEBI:16199"
+    chebi_label: urea
+    aliases: ["blood urea nitrogen"]
+
+# ──────────────────────────────────────────────────────────────────────
+# Abbreviations
+# ──────────────────────────────────────────────────────────────────────
+# Common clinical abbreviations → entity IDs.
+# Where config.yaml used PRO IDs (e.g. CK → PR:000050097),
+# those are preserved here; the old chebi.py CHEBI IDs were incorrect
+# for proteins.
+
+abbreviations:
+  # Lipoproteins (CHEBI)
+  LDL:
+    entity_id: "CHEBI:47774"
+    entity_label: low-density lipoprotein cholesterol
+  HDL:
+    entity_id: "CHEBI:47775"
+    entity_label: high-density lipoprotein cholesterol
+  VLDL:
+    entity_id: "CHEBI:47773"
+    entity_label: very-low-density lipoprotein cholesterol
+
+  # Hormones (CHEBI where appropriate)
+  ACTH:
+    entity_id: "CHEBI:3892"
+    entity_label: corticotropin
+  TSH:
+    entity_id: "CHEBI:63527"
+    entity_label: thyrotropin
+  GH:
+    entity_id: "CHEBI:37845"
+    entity_label: growth hormone
+  FSH:
+    entity_id: "CHEBI:81569"
+    entity_label: follicle-stimulating hormone
+  LH:
+    entity_id: "CHEBI:81568"
+    entity_label: luteinizing hormone
+
+  # Metabolites / small molecules (CHEBI)
+  BUN:
+    entity_id: "CHEBI:16199"
+    entity_label: urea
+
+  # Enzymes / proteins (PRO) — config.yaml PRO IDs take precedence
+  CK:
+    entity_id: "PR:000050097"
+    entity_label: creatine kinase
+  CPK:
+    entity_id: "PR:000050097"
+    entity_label: creatine kinase
+  ALT:
+    entity_id: "PR:000004813"
+    entity_label: alanine transaminase
+  AST:
+    entity_id: "PR:000004814"
+    entity_label: aspartate transaminase
+  ALP:
+    entity_id: "PR:000003968"
+    entity_label: alkaline phosphatase
+  GGT:
+    entity_id: "PR:000007289"
+    entity_label: gamma-glutamyltransferase
+  PTH:
+    entity_id: "PR:000013429"
+    entity_label: parathyroid hormone
+  AFP:
+    entity_id: "PR:000003809"
+    entity_label: alpha-fetoprotein
+
+  # Immunoglobulins (PRO)
+  CRP:
+    entity_id: "PR:000001201"
+    entity_label: C-reactive protein
+  IgA:
+    entity_id: "PR:000001872"
+    entity_label: immunoglobulin A
+  IgG:
+    entity_id: "PR:000001873"
+    entity_label: immunoglobulin G
+  IgM:
+    entity_id: "PR:000001875"
+    entity_label: immunoglobulin M
+  IgE:
+    entity_id: "PR:000001871"
+    entity_label: immunoglobulin E

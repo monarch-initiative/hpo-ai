@@ -1,0 +1,57 @@
+# HPO-AI Pipeline Configuration
+
+# Confidence thresholds
+thresholds:
+  auto_approve: 0.9
+  review: 0.5
+
+# Scoring weights
+weights:
+  chemical_match: 0.4
+  pattern_fit: 0.2
+  label_similarity: 0.2
+  existing_annotations: 0.2
+
+# Ontology sources
+ontologies:
+  hpo: sqlite:obo:hp
+  chebi: sqlite:obo:chebi
+  # pro: sqlite:obo:pr  # Large, use OLS by default
+
+# Preferred CHEBI forms (atoms over ions for HPO)
+# Per upheno#946, HPO uses atoms while GO uses ions
+preferred_chebi_forms:
+  calcium: CHEBI:22984  # calcium atom (not calcium(2+))
+  potassium: CHEBI:26216  # potassium atom
+  sodium: CHEBI:26708  # sodium atom
+  magnesium: CHEBI:25107  # magnesium atom
+  iron: CHEBI:18248  # iron atom
+  copper: CHEBI:28694  # copper atom
+  zinc: CHEBI:27363  # zinc atom
+  chloride: CHEBI:17996  # chloride (not chlorine atom)
+
+# Common abbreviations
+abbreviations:
+  LDL: CHEBI:47774
+  HDL: CHEBI:47775
+  VLDL: CHEBI:47773
+  ACTH: CHEBI:3892
+  CK: PR:000050097
+  CPK: PR:000050097
+  ALT: PR:000004813
+  AST: PR:000004814
+  ALP: PR:000003968
+  GGT: PR:000007289
+  TSH: CHEBI:63527
+  PTH: PR:000013429
+  AFP: PR:000003809
+  CRP: PR:000001201
+  IgA: PR:000001872
+  IgG: PR:000001873
+  IgM: PR:000001875
+  IgE: PR:000001871
+
+# Output settings
+output:
+  tsv_format: curated_phenotypes  # Match existing format
+  include_evidence_summary: true
