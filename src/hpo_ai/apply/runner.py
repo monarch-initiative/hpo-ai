@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hpo_ai.apply.eq_editor import EqEditor, EqReport
+from hpo_ai.apply.reason import check_satisfiability
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,8 @@ class ApplyReport:
     eq: EqReport
     sparql_applied: bool
     output: Path
+    # Unsatisfiable class IRIs found by the reason gate (None = gate not run).
+    unsatisfiable: list[str] | None = None
 
 
 def parse_axioms_ofn(text: str) -> dict[str, str]:
@@ -54,6 +57,7 @@ def apply_patch_bundle(
     hpo_path: str | Path,
     robot: str = "/Users/matentzn/tools/robot",
     catalog: str | Path | None = None,
+    verify_satisfiable: bool = False,
 ) -> ApplyReport:
     """Apply a curate bundle to an hp-edit.owl in place.
 
@@ -62,6 +66,9 @@ def apply_patch_bundle(
         hpo_path: Path to the hp-edit.owl to modify.
         robot: Path to the ROBOT executable.
         catalog: Optional catalog file for import resolution.
+        verify_satisfiable: When True, run ``robot reason`` after applying and
+            record any unsatisfiable classes on the report (catches role/EQ
+            regressions that never surface in ``review.tsv``).
 
     Returns:
         An :class:`ApplyReport`.
@@ -91,6 +98,14 @@ def apply_patch_bundle(
                "--input", str(hpo_path), "--format", "ofn", "--output", str(hpo_path)]
         subprocess.run(cmd, check=True, capture_output=True)
 
+    unsatisfiable: list[str] | None = None
+    if verify_satisfiable:
+        unsatisfiable = check_satisfiability(hpo_path, robot=robot, catalog=catalog)
+        if unsatisfiable:
+            logger.error("Apply introduced %d unsatisfiable classes: %s",
+                         len(unsatisfiable), ", ".join(unsatisfiable[:10]))
+
     logger.info("Applied bundle: EQ added=%d replaced=%d; sparql=%s",
                 len(eq_report.added), len(eq_report.replaced), sparql_applied)
-    return ApplyReport(eq=eq_report, sparql_applied=sparql_applied, output=hpo_path)
+    return ApplyReport(eq=eq_report, sparql_applied=sparql_applied, output=hpo_path,
+                       unsatisfiable=unsatisfiable)
