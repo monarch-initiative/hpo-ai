@@ -5,6 +5,9 @@ tests/*/*/output
 # temp files
 tmp/
 
+# Local working clone of the HPO repo (scratch; never committed or linted)
+/github/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -139,3 +142,6 @@ dmypy.json
 .idea
 # Local vscode editor config
 .vscode
+
+# macOS
+.DS_Store
