@@ -43,6 +43,7 @@ class PatternAssigner:
             r"^hypo",
             r"^decreased",
             r"^reduced",
+            r"^diminished",
             r"^low\b",
             r"^deficien",
             r"below.*normal",

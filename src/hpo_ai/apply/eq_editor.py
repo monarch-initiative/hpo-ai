@@ -105,6 +105,16 @@ class EqEditor:
                     report.unchanged.append(matched_iri)
                     out.append(line)
                 else:
+                    # Overwrite by default (per policy), but flag the one case that
+                    # silently reintroduces an unsatisfiable class: replacing a
+                    # curator's role-based EQ ('has role' RO_0000087) with a direct
+                    # filler. The reason gate is the backstop; this makes it visible.
+                    if "RO_0000087" in current and "RO_0000087" not in new_expr:
+                        logger.warning(
+                            "Replacing role-based EQ for %s with a direct-filler form; "
+                            "this may reintroduce an unsatisfiable class (run the reason gate)",
+                            matched_iri,
+                        )
                     out.append(f"EquivalentClasses(<{matched_iri}> {new_expr})\n")
                     report.replaced.append(matched_iri)
                 replaced.add(matched_iri)

@@ -27,7 +27,7 @@ _OBO = "http://purl.obolibrary.org/obo/"
 _REVIEW_COLUMNS = [
     "hpo_id", "current_label", "proposed_label", "preferred_label",
     "primary_label_source", "proposed_definition", "change_type", "confidence",
-    "tier", "pattern", "chemical", "is_entity", "eq_present",
+    "tier", "pattern", "chemical", "is_entity", "is_role", "eq_present",
 ]
 
 
@@ -149,6 +149,7 @@ def run_curate(
             "pattern": assoc.pattern.id,
             "chemical": assoc.fillers.chemical_string,
             "is_entity": str(assoc.fillers.is_entity),
+            "is_role": str(assoc.fillers.is_role),
             "eq_present": str(eq_present),
         })
 

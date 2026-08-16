@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 
 _OBO = "http://purl.obolibrary.org/obo/"
 
+# Fixed terms for the role-based bearer expression (HPO #4952 / WithRole DOSDP).
+_CHEBI_ENTITY = "CHEBI:24431"  # 'chemical entity'
+_HAS_ROLE = "RO:0000087"  # 'has role'
+
 
 def _iri(curie: str) -> str:
     """Full OBO IRI (angle-bracketed) for a CURIE.
@@ -97,9 +101,20 @@ def materialize(term: HPTerm, association: Association) -> CurationProposal:
     proposed_chemical_entity = None
     if fillers.is_entity and fillers.chemical_entity is not None and pattern.equivalentTo:
         chemical_iri = _iri(fillers.chemical_entity.entity_id)
+        # A *role* filler cannot bear a concentration: model it as the material
+        # bearer ('chemical entity') carrying that role via ``has role``. The
+        # pattern's ``{chemical}`` sits directly inside the bearer intersection,
+        # so expanding it to two members yields the flattened WithRole DOSDP form.
+        if fillers.is_role:
+            filler_expr = (
+                f"{_iri(_CHEBI_ENTITY)} "
+                f"ObjectSomeValuesFrom({_iri(_HAS_ROLE)} {chemical_iri})"
+            )
+        else:
+            filler_expr = chemical_iri
         location_iri = _iri(fillers.location_id) if fillers.location_id else ""
         proposed_logical_definition = (
-            pattern.equivalentTo.replace("{chemical}", chemical_iri)
+            pattern.equivalentTo.replace("{chemical}", filler_expr)
             .replace("{location}", location_iri)
         )
         proposed_chemical_entity = fillers.chemical_entity.entity_id

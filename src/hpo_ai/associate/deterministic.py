@@ -24,7 +24,10 @@ logger = logging.getLogger(__name__)
 _QUALIFIER = (
     r"cerebrospinal fluid|cerebrospinal|circulating|blood|serum|plasma|urinary|urine|csf"
 )
-_DIRECTION = r"elevated|increased|decreased|reduced|low|high|abnormal"
+# "abnormality of" must precede "abnormal" so the longer phrase wins.
+_DIRECTION = (
+    r"elevated|increased|decreased|reduced|diminished|low|high|abnormality of|abnormal"
+)
 _NOUN = r"concentration|concentrations|level|levels|amount"
 
 _DIRECTION_RE = re.compile(rf"^(?:{_DIRECTION})\b\s*", re.IGNORECASE)
@@ -51,6 +54,10 @@ def extract_chemical(label: str) -> str | None:
     'lactate'
     >>> extract_chemical("Decreased circulating L-arginine level")
     'L-arginine'
+    >>> extract_chemical("Diminished circulating cationic trypsinogen concentration")
+    'cationic trypsinogen'
+    >>> extract_chemical("Abnormality of circulating beta-2-microglobulin level")
+    'beta-2-microglobulin'
     >>> extract_chemical("Abnormality of the cerebellum") is None
     True
     >>> extract_chemical("Elevated potassium") is None
@@ -279,6 +286,15 @@ class DeterministicAssociator:
                             f"'{chemical_string}' did not resolve and string not allowed")
 
         is_entity = entity is not None
+        # A CHEBI *role* filler (subsumed by CHEBI:50906) must be modelled with
+        # ``has role`` rather than as a direct genus, or the EQ is unsatisfiable.
+        is_role = (
+            entity is not None
+            and entity.entity_id.startswith("CHEBI:")
+            and self.chebi_resolver is not None
+            and hasattr(self.chebi_resolver, "is_role")
+            and self.chebi_resolver.is_role(entity.entity_id)
+        )
         confidence = (entity.confidence or 0.0) if entity is not None else self.string_confidence
         evidence = (
             f"direction={direction}; location={location_id}; "
@@ -291,6 +307,7 @@ class DeterministicAssociator:
             chemical_string=chemical_string,
             chemical_entity=entity,
             is_entity=is_entity,
+            is_role=is_role,
         )
         preferred_label, preferred_source, clinical_syn = self._preferred_label(
             term, direction, location_id, chemical_string, route

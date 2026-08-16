@@ -30,6 +30,9 @@ class Fillers:
     chemical_string: str
     chemical_entity: ChemicalEntityEvidence | None
     is_entity: bool
+    # True when the resolved chemical is a CHEBI *role* (subsumed by CHEBI:50906)
+    # rather than a material entity; the EQ then uses ``has role`` (RO:0000087).
+    is_role: bool = False
 
 
 @dataclass

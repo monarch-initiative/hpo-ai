@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from oaklib import get_adapter
+from oaklib.datamodels.vocabulary import IS_A
 
 from hpo_ai.datamodel import ChemicalEntityEvidence, EvidenceType
 from hpo_ai.enrichment.selection_rules import (
@@ -31,6 +32,12 @@ logger = logging.getLogger(__name__)
 
 # Default location for the production rules file
 DEFAULT_RULES_PATH = Path(__file__).parents[2].parent / "conf" / "chebi_selection_rules.yaml"
+
+# CHEBI upper-level roots used to distinguish a *material chemical entity* from
+# a *role*. A role filler cannot bear a concentration, so it must be modelled
+# with ``has role`` rather than as a direct genus (see issue_role_based_patterns).
+CHEBI_ROLE_ROOT = "CHEBI:50906"  # 'role'
+CHEBI_ENTITY_ROOT = "CHEBI:24431"  # 'chemical entity'
 
 
 class CHEBIResolver:
@@ -170,6 +177,25 @@ class CHEBIResolver:
         results.sort(key=lambda x: x.confidence or 0, reverse=True)
 
         return results[:max_results]
+
+    def is_role(self, chebi_id: str) -> bool:
+        """Return True if a CHEBI class is a *role* rather than a material entity.
+
+        A role is any class subsumed by CHEBI:50906 ('role'), e.g. metabolite
+        (CHEBI:25212) or coenzyme (CHEBI:23354). Such a class cannot bear a
+        concentration and must be modelled with ``has role`` in the EQ axiom.
+        Non-CHEBI identifiers (e.g. PRO proteins) are never roles.
+
+        Args:
+            chebi_id: A CURIE (only ``CHEBI:*`` can be a role).
+
+        Returns:
+            True if the class is a role.
+        """
+        if not chebi_id.startswith("CHEBI:"):
+            return False
+        ancestors = set(self.adapter.ancestors(chebi_id, predicates=[IS_A]))
+        return CHEBI_ROLE_ROOT in ancestors
 
     def resolve_by_id(self, chebi_id: str) -> ChemicalEntityEvidence | None:
         """Get evidence for a known CHEBI ID.
