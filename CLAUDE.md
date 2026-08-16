@@ -90,6 +90,32 @@ NEVER required, if you think you need them, it's likely a bad smell that your lo
 3. **Review** - Export to TSV for human review (curated_phenotypes.tsv format)
 4. **Apply** - Generate ROBOT template for approved changes
 
+## Upstream naming patterns — CHECK BEFORE TOUCHING LABEL/NAMING LOGIC
+
+HPO maintains the canonical chemical-phenotype naming rules as SPARQL in its own
+repo, at `~/ws/ont/human-phenotype-ontology/src/sparql/`. Our pipeline reimplements
+this logic (label generation, name canonicalisation, enzyme-activity vs concentration,
+label→synonym demotion), so **whenever you touch the naming/label part of the
+pipeline** (`associate/deterministic.py` label extraction, `enrichment/name_normalizer.py`,
+`generate/materialize.py`, the `patterns/*.yaml` templates), first check these files
+for updates and mirror any new rules:
+
+- **`update-chemical-labels.ru`** — the authoritative rule set: chemical/protein name
+  canonicalisation (e.g. `alpha-2-HS-glycoprotein → fetuin-A`, `serotransferrin →
+  transferrin`, strip ` (human)`/` atom`/` molecular entity`, ion forms like
+  `calcium(2+) → calcium`, abbreviations like `mucin-16 → CA-125`, L-stereoisomer
+  specifiers, clinical-name restoration) **and the enzyme-activity rule** (a label with
+  a word ending in `-ase`, or a known protease, gets `concentration → activity`,
+  excluding zymogens/inhibitors and `-base` words).
+- **`chemical-phenotypes.sparql`** — defines which terms count as chemical phenotypes
+  (`level`/`concentration`/`amount`/`-emia`/`-uria`, incl. parent-based), and `list-chemical.sparql`.
+- **`add-labels-as-synonyms.ru`** — the label→exact-synonym demotion our materialiser mirrors.
+- **`relegate-updated-labels-to-candidate-status.ru`** — translation-status handling on relabel.
+
+These files are updated over time; treat them as the source of truth and keep our
+implementation in sync. See `docs/corpus-failure-modes.md` for where our current
+implementation diverges.
+
 ## Key Data Models
 
 - `HPTerm` - Extracted HP term with label, definition, synonyms, existing annotations
