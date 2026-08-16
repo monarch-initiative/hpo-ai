@@ -56,6 +56,7 @@ def test_promotes_common_clinical_synonym_to_primary() -> None:
 
     proposal = materialize(term, assoc)
     assert proposal.proposed_label == "Hyperglycemia"
+    assert proposal.proposed_synonyms is not None
     syns = {s.value for s in proposal.proposed_synonyms}
     assert "Elevated circulating glucose concentration" in syns
     assert "Increased blood glucose concentration" in syns
@@ -79,6 +80,7 @@ def test_obscure_clinical_synonym_kept_as_synonym_not_promoted() -> None:
 
     proposal = materialize(term, assoc)
     assert proposal.proposed_label == "Elevated circulating glucose concentration"
+    assert proposal.proposed_synonyms is not None
     assert "Hyperglucosemia" in {s.value for s in proposal.proposed_synonyms}
 
 
@@ -143,4 +145,5 @@ def test_llm_oracle_obscure_found_term_kept_as_synonym() -> None:
     assert assoc.preferred_label is None
     assert assoc.clinical_synonym_to_add == "Hyperwidgetolemia"
     proposal = materialize(term, assoc)
+    assert proposal.proposed_synonyms is not None
     assert "Hyperwidgetolemia" in {s.value for s in proposal.proposed_synonyms}

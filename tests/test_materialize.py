@@ -32,6 +32,7 @@ def test_entity_case_produces_label_def_and_eq() -> None:
     proposal = materialize(term, _assoc(term, True, entity))
 
     assert proposal.proposed_label == "Elevated CSF taurine concentration"
+    assert proposal.proposed_definition is not None
     assert "taurine" in proposal.proposed_definition
     assert proposal.proposed_definition.endswith("above the upper limit of normal.")
     assert proposal.proposed_chemical_entity == "CHEBI:15891"
@@ -42,6 +43,7 @@ def test_entity_case_produces_label_def_and_eq() -> None:
     assert "<http://purl.obolibrary.org/obo/UBERON_0001359>" in eq
     assert "{chemical}" not in eq and "{location}" not in eq
     # original label preserved as exact synonym
+    assert proposal.proposed_synonyms is not None
     syn_values = {s.value for s in proposal.proposed_synonyms}
     assert "Increased CSF taurine concentration" in syn_values
 
@@ -66,6 +68,7 @@ def test_preserve_clinical_label_demotes_pattern_label() -> None:
     proposal = materialize(term, assoc)
 
     assert proposal.proposed_label == "Hypoglycorrhachia"  # clinical label preserved
+    assert proposal.proposed_synonyms is not None
     syn_values = {s.value for s in proposal.proposed_synonyms}
     assert "Decreased CSF glucose concentration" in syn_values  # pattern label demoted
     assert proposal.proposed_logical_definition is not None  # EQ still generated
@@ -76,6 +79,7 @@ def test_string_case_has_text_but_no_eq() -> None:
     proposal = materialize(term, _assoc(term, False, chemical="interferon alpha"))
 
     assert proposal.proposed_label == "Elevated CSF interferon alpha concentration"
+    assert proposal.proposed_definition is not None
     assert "interferon alpha" in proposal.proposed_definition
     assert proposal.proposed_logical_definition is None
     assert proposal.proposed_chemical_entity is None

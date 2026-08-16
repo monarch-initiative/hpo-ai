@@ -11,7 +11,7 @@ from hpo_ai.associate import (
     UnmappedReason,
 )
 from hpo_ai.datamodel import ChemicalEntityEvidence, HPTerm
-from hpo_ai.datamodel.pattern import Pattern, Selector, Var
+from hpo_ai.datamodel.pattern import DirectionSelector, Pattern, Selector, Var
 from hpo_ai.patterns.loader import load_patterns
 
 PATTERNS = load_patterns(Path(__file__).parent.parent / "patterns")
@@ -52,6 +52,7 @@ def test_taurine_csf_maps_to_increased_csf_pattern() -> None:
     assert assoc.pattern.id == "increasedChemicalInCSF"
     assert assoc.fillers.location_id == "UBERON:0001359"
     assert assoc.fillers.is_entity is True
+    assert assoc.fillers.chemical_entity is not None
     assert assoc.fillers.chemical_entity.entity_id == "CHEBI:15891"
 
 
@@ -79,7 +80,7 @@ def test_string_disallowed_is_unmapped() -> None:
     strict = [
         Pattern(
             id="strictCSF",
-            selector=Selector(direction="increased", location="UBERON:0001359"),
+            selector=Selector(direction=DirectionSelector.increased, location="UBERON:0001359"),
             qualifier="CSF",
             name="Elevated CSF {chemical} concentration",
             vars=[Var(name="chemical", range="CHEBI:24431", allow_string=False)],
@@ -143,6 +144,7 @@ def test_clinical_store_short_circuits_llm_and_honours_curation(tmp_path) -> Non
     assert isinstance(assoc, Association)
     assert calls["n"] == 0  # LLM never called
     assert assoc.fillers.chemical_string == "glucose"
+    assert assoc.fillers.chemical_entity is not None
     assert assoc.fillers.chemical_entity.entity_id == "CHEBI:17234"
     assert assoc.preserve_current_label is True
 
@@ -166,10 +168,10 @@ def test_clinical_store_records_machine_row_on_miss(tmp_path) -> None:
 
 def test_ambiguous_when_two_patterns_match() -> None:
     dup = [
-        Pattern(id="a", selector=Selector(direction="increased", location="UBERON:0001359"),
+        Pattern(id="a", selector=Selector(direction=DirectionSelector.increased, location="UBERON:0001359"),
                 name="Elevated CSF {chemical} concentration",
                 vars=[Var(name="chemical", range="CHEBI:24431", allow_string=True)]),
-        Pattern(id="b", selector=Selector(direction="increased", location="UBERON:0001359"),
+        Pattern(id="b", selector=Selector(direction=DirectionSelector.increased, location="UBERON:0001359"),
                 name="Elevated CSF {chemical} concentration",
                 vars=[Var(name="chemical", range="CHEBI:24431", allow_string=True)]),
     ]

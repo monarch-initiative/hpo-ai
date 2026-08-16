@@ -34,6 +34,7 @@ def test_csf_increased_pattern_shape() -> None:
     assert chemical.allow_string is True
     assert chemical.range == "CHEBI:24431"
     # EQ template is functional syntax with placeholders for chemical + location
+    assert p.equivalentTo is not None
     assert "{chemical}" in p.equivalentTo
     assert "{location}" in p.equivalentTo
     assert p.equivalentTo.startswith("ObjectSomeValuesFrom(")

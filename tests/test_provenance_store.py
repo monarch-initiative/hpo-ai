@@ -31,8 +31,11 @@ def test_record_and_read_roundtrip(tmp_path: Path) -> None:
     store.save()
 
     reloaded = clinical_grounding_store(tmp_path / "clinical.sssom.tsv")
-    name, entity = read_grounding(reloaded, "Hypoglycorrhachia")
+    grounding = read_grounding(reloaded, "Hypoglycorrhachia")
+    assert grounding is not None
+    name, entity = grounding
     assert name == "glucose"
+    assert entity is not None
     assert entity.entity_id == "CHEBI:17234"
 
 
@@ -53,8 +56,11 @@ def test_manual_row_survives_rerun(tmp_path: Path) -> None:
     rerun.save()
 
     final = clinical_grounding_store(path)
-    name, entity = read_grounding(final, "Hypoglycorrhachia")
+    grounding = read_grounding(final, "Hypoglycorrhachia")
+    assert grounding is not None
+    name, entity = grounding
     assert name == "glucose"                # human value preserved
+    assert entity is not None
     assert entity.entity_id == "CHEBI:17234"
 
 
@@ -72,7 +78,9 @@ def test_machine_row_is_refreshed(tmp_path: Path) -> None:
     store.record("X", [_clinical_row("X", "glucose", "CHEBI:17234")])  # MACHINE
     wrote = store.record("X", [_clinical_row("X", "lactate", "CHEBI:24996")])
     assert wrote is True  # unlocked machine row overwritten
-    name, _ = read_grounding(store, "X")
+    grounding = read_grounding(store, "X")
+    assert grounding is not None
+    name, _ = grounding
     assert name == "lactate"
 
 
@@ -80,7 +88,9 @@ def test_noterm_row_reads_as_unresolved(tmp_path: Path) -> None:
     path = tmp_path / "n.sssom.tsv"
     store = clinical_grounding_store(path)
     store.record("Mysteryitis", machine_grounding_rows("HP:9", "Mysteryitis", "mysteryol", None, "m"))
-    name, entity = read_grounding(store, "Mysteryitis")
+    grounding = read_grounding(store, "Mysteryitis")
+    assert grounding is not None
+    name, entity = grounding
     assert name == "mysteryol"
     assert entity is None
 
