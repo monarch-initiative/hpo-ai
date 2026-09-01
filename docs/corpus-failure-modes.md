@@ -47,6 +47,31 @@ these PRs predate role modelling and use direct fillers only.
 | `fail:label_case` | 1 | Minor casing (`Angiotensin-converting enzyme` → lower-case). Folded into name canonicalisation. |
 | `unmapped:no_pattern` | 1 | Enzyme activity (`beta-hexosaminidase activity`) — same as `enzyme_activity`. |
 
+## Naming rules: a finding, not a lift
+
+The `update-chemical-labels.ru` name-canonicalisation + enzyme-activity rules are
+now ported into `conf/name_normalization_rules.yaml` and applied in production
+(`run_curate` → `materialize`). Applying them **does not lift this corpus** — it is
+slightly net-negative — for two structural reasons the corpus itself exposed:
+
+- **The corpus inputs are already human-normalised labels**, not the *systematic*
+  CHEBI/PRO names the `.ru` renames target (`alpha-2-HS-glycoprotein → fetuin-A`
+  only fires when the input actually is the systematic name). Our extracted chemical
+  spans rarely contain them, so the renames don't fire on the corpus. Their real
+  value is on resolved entity labels in production.
+- **The historical golden partly predates the current `.ru`.** Applying the enzyme
+  rule faithfully turns `amylase`, `matrix metalloproteinase 2`, and the CK `BB`/`MM`
+  isoforms into `... activity`, but those merged terms were curated as
+  `... concentration`; and `phenylalanine → L-phenylalanine` disagrees with a term
+  the curators left non-L. These are either curator inconsistencies or terms merged
+  before the rule landed.
+
+So the normaliser is **deliberately not applied in the corpus scorer** (which guards
+association/EQ accuracy on realistic inputs); it is validated by dedicated tests
+(`tests/test_name_normalization.py`) and shipped for production. The open lever for
+actually raising label accuracy is naming from the *resolved entity's systematic
+label* (then normalising) — a design change, not a rule port.
+
 ## Already fixed from this corpus
 
 - `"Abnormality of X"` phrasing now yields `direction=abnormal` + the chemical

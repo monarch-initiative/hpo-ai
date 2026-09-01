@@ -28,8 +28,9 @@ from hpo_ai.datamodel import ChemicalEntityEvidence, EvidenceType, HPTerm
 from hpo_ai.generate.materialize import materialize
 from hpo_ai.patterns.loader import load_patterns
 
+_ROOT = Path(__file__).resolve().parents[1]
 CORPUS = Path(__file__).parent / "corpus" / "corpus.tsv"
-PATTERN_DIR = Path(__file__).resolve().parents[1] / "patterns"
+PATTERN_DIR = _ROOT / "patterns"
 
 
 class _StubResolver:
@@ -153,6 +154,11 @@ def run_corpus(rows: list[dict[str, str]] | None = None) -> list[CorpusResult]:
         if isinstance(assoc, Unmapped):
             unmapped_reason = assoc.reason.value
         else:
+            # NB: the name normaliser is deliberately NOT applied here. The
+            # corpus inputs are already human-normalised labels and the golden
+            # partly predates the current update-chemical-labels.ru, so scoring
+            # through the normaliser conflates association accuracy with a
+            # production-only naming concern (see docs/corpus-failure-modes.md).
             proposal = materialize(term, assoc)
             proposed_label = proposal.proposed_label or ""
             label_match = bool(row["after_label"]) and proposed_label == row["after_label"]
