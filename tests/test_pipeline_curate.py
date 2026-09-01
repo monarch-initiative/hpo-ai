@@ -58,6 +58,11 @@ def test_run_curate_produces_bundle(tmp_path: Path) -> None:
     assert review["HP:9999999"]["is_entity"] == "False"
     assert review["HP:9999999"]["eq_present"] == "False"
     assert review["HP:0002490"]["eq_present"] == "True"
+    # current_definition is carried through for side-by-side review
+    assert review["HP:0002490"]["current_definition"] == (
+        "Increased concentration of lactate in the cerebrospinal fluid."
+    )
+    assert review["HP:9999999"]["current_definition"] == ""  # term had none
 
 
 def test_pattern_picks_are_recorded_and_overridable(tmp_path: Path) -> None:

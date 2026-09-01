@@ -13,6 +13,10 @@ from hpo_ai.associate.models import Association, Unmapped
 from hpo_ai.associate.report import summarize_reasons, write_unmapped_tsv
 from hpo_ai.datamodel import HPTerm
 from hpo_ai.datamodel.pattern import Pattern
+from hpo_ai.enrichment.name_normalizer import (
+    NameNormalizer,
+    load_name_normalization_rules,
+)
 from hpo_ai.generate import materialize
 from hpo_ai.patch.kgcl import build_kgcl, validate_kgcl
 from hpo_ai.patch.sparql import compile_sparql
@@ -24,10 +28,14 @@ logger = logging.getLogger(__name__)
 
 _OBO = "http://purl.obolibrary.org/obo/"
 
+# Default name-normalisation rules (mirrors update-chemical-labels.ru; see CLAUDE.md).
+_DEFAULT_NAME_RULES = Path(__file__).parents[2].parent / "conf" / "name_normalization_rules.yaml"
+
 _REVIEW_COLUMNS = [
     "hpo_id", "current_label", "proposed_label", "preferred_label",
-    "primary_label_source", "proposed_definition", "change_type", "confidence",
-    "tier", "pattern", "chemical", "is_entity", "is_role", "eq_present",
+    "primary_label_source", "current_definition", "proposed_definition",
+    "change_type", "confidence", "tier", "pattern", "chemical",
+    "is_entity", "is_role", "eq_present",
 ]
 
 
@@ -111,10 +119,18 @@ def run_curate(
     eq_lines: list[str] = []
     review_rows: list[dict] = []
 
+    # Canonicalise chemical names and apply the enzyme-activity rule, mirroring
+    # HPO's update-chemical-labels.ru (see CLAUDE.md). None if rules are absent.
+    normalizer = (
+        NameNormalizer(load_name_normalization_rules(_DEFAULT_NAME_RULES))
+        if _DEFAULT_NAME_RULES.exists()
+        else None
+    )
+
     for assoc in associations:
         term = by_id[assoc.hp_id]
         state = term_state_from_hpterm(term)
-        proposal = materialize(term, assoc)
+        proposal = materialize(term, assoc, normalizer=normalizer)
 
         kgcl_lines.extend(build_kgcl(state, proposal))
         sparql_items.append((state, proposal))
@@ -142,6 +158,7 @@ def run_curate(
             "proposed_label": proposal.proposed_label or "",
             "preferred_label": assoc.preferred_label or "",
             "primary_label_source": assoc.preferred_source or "pattern",
+            "current_definition": term.definition or "",
             "proposed_definition": proposal.proposed_definition or "",
             "change_type": _val(proposal.change_type),
             "confidence": f"{assoc.confidence:.2f}",
