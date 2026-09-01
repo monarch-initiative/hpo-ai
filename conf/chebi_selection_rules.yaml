@@ -75,6 +75,55 @@ curated_mappings:
     chebi_label: urea
     aliases: ["blood urea nitrogen"]
 
+  # Metabolites whose HPO name differs in structure from the CHEBI label, so
+  # synonym search misses them (issue_resolver_recall). Ids verified against
+  # CHEBI; biological/neutral form chosen. Curator: audit and override here.
+  - chemical_name: 5-hydroxyindoleacetic acid
+    chebi_id: "CHEBI:27823"
+    chebi_label: (5-hydroxyindol-3-yl)acetic acid
+    aliases: ["5-HIAA", "5-hydroxyindolacetic acid", "5-hydroxyindole-3-acetic acid"]
+    rationale: "5-HIAA; HPO label spelling (incl. the 'indol-' misspelling) differs from CHEBI"
+  - chemical_name: dihydrothymine
+    chebi_id: "CHEBI:27468"
+    chebi_label: 5,6-dihydrothymine
+    aliases: ["5,6-dihydrothymine"]
+    rationale: "CHEBI carries the 5,6- locant the HPO name omits"
+  - chemical_name: dihydrouracil
+    chebi_id: "CHEBI:15901"
+    chebi_label: 5,6-dihydrouracil
+    aliases: ["5,6-dihydrouracil"]
+    rationale: "CHEBI carries the 5,6- locant the HPO name omits"
+  - chemical_name: argininosuccinic acid
+    chebi_id: "CHEBI:15682"
+    chebi_label: (N(omega)-L-arginino)succinic acid
+    aliases: ["argininosuccinate", "argininosuccinic acid"]
+    rationale: "Canonical argininosuccinic acid; CHEBI label is the systematic form"
+  - chemical_name: saccharopine
+    chebi_id: "CHEBI:16927"
+    chebi_label: L-saccharopine
+    aliases: ["L-saccharopine"]
+    rationale: "Biological saccharopine is the L-form (lysine catabolism intermediate)"
+  - chemical_name: metanephrine
+    chebi_id: "CHEBI:89633"
+    chebi_label: Metanephrine
+    aliases: []
+    rationale: "Neutral 'Metanephrine' (not normetanephrine, not the charged/stereo forms)"
+  - chemical_name: N-carbamyl-beta-alanine
+    chebi_id: "CHEBI:18261"
+    chebi_label: N-carbamoyl-beta-alanine
+    aliases: ["N-carbamoyl-beta-alanine", "3-ureidopropionic acid"]
+    rationale: "HPO 'carbamyl' spelling vs CHEBI 'carbamoyl'"
+  - chemical_name: pyridoxal-5'-phosphate
+    chebi_id: "CHEBI:18405"
+    chebi_label: pyridoxal 5'-phosphate
+    aliases: ["pyridoxal 5'-phosphate", "PLP"]
+    rationale: "Hyphen-vs-space punctuation difference from the CHEBI label"
+  - chemical_name: branched-chain amino acid
+    chebi_id: "CHEBI:22918"
+    chebi_label: branched-chain amino acid
+    aliases: ["branched chain amino acid"]
+    rationale: "Grouping term; CHEBI hyphenates 'branched-chain'"
+
 # ──────────────────────────────────────────────────────────────────────
 # Abbreviations
 # ──────────────────────────────────────────────────────────────────────

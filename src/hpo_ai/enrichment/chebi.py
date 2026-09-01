@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from oaklib import get_adapter
+from oaklib.datamodels.search import SearchConfiguration, SearchProperty
 from oaklib.datamodels.vocabulary import IS_A
 
 from hpo_ai.datamodel import ChemicalEntityEvidence, EvidenceType
@@ -38,6 +39,12 @@ DEFAULT_RULES_PATH = Path(__file__).parents[2].parent / "conf" / "chebi_selectio
 # with ``has role`` rather than as a direct genus (see issue_role_based_patterns).
 CHEBI_ROLE_ROOT = "CHEBI:50906"  # 'role'
 CHEBI_ENTITY_ROOT = "CHEBI:24431"  # 'chemical entity'
+
+# Search labels AND synonyms so a common name that is a CHEBI *synonym* (e.g.
+# "epinephrine" -> "(R)-adrenaline") still resolves (issue_resolver_recall).
+_SYNONYM_SEARCH = SearchConfiguration(
+    properties=[SearchProperty.LABEL, SearchProperty.ALIAS]
+)
 
 
 class CHEBIResolver:
@@ -139,10 +146,11 @@ class CHEBIResolver:
                 )
             )
 
-        # Layer 2: OAK search (always run to provide alternatives)
+        # Layer 2: OAK search (always run to provide alternatives). Synonym-
+        # inclusive so common names that are CHEBI synonyms still resolve.
         try:
             search_results = list(
-                self.adapter.basic_search(chemical_name)
+                self.adapter.basic_search(chemical_name, config=_SYNONYM_SEARCH)
             )[:max_results]
 
             for i, curie in enumerate(search_results):
@@ -153,7 +161,14 @@ class CHEBIResolver:
                 if not label:
                     continue
 
-                confidence = self._calculate_confidence(chemical_name, label, i)
+                # Only fetch aliases when the label isn't an exact match, so a
+                # synonym hit ("epinephrine") can be scored as a strong match.
+                aliases = (
+                    None
+                    if chemical_name.lower().strip() == label.lower().strip()
+                    else list(self.adapter.entity_aliases(curie))
+                )
+                confidence = self._calculate_confidence(chemical_name, label, i, aliases)
                 is_protonated = self._is_protonated_form(label)
                 alternative_forms = self._get_alternative_forms(label)
 
@@ -226,6 +241,7 @@ class CHEBIResolver:
         query: str,
         label: str,
         rank: int,
+        aliases: list[str] | None = None,
     ) -> float:
         """Calculate match confidence.
 
@@ -233,6 +249,9 @@ class CHEBIResolver:
             query: Original search query.
             label: Matched label.
             rank: Position in search results.
+            aliases: The entity's synonyms, if the label was not an exact match.
+                An exact synonym match scores just below an exact label match so
+                a common name that is a CHEBI synonym still clears the threshold.
 
         Returns:
             Confidence score between 0 and 1.
@@ -240,9 +259,13 @@ class CHEBIResolver:
         query_lower = query.lower().strip()
         label_lower = label.lower().strip()
 
-        # Exact match
+        # Exact label match
         if query_lower == label_lower:
             return 0.98
+
+        # Exact synonym match (e.g. "epinephrine" -> "(R)-adrenaline")
+        if aliases and query_lower in {a.lower().strip() for a in aliases}:
+            return max(0.3, 0.93 - rank * 0.05)
 
         # Query is contained in label or vice versa
         if query_lower in label_lower or label_lower in query_lower:
