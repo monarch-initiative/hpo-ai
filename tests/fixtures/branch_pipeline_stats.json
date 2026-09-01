@@ -9,8 +9,8 @@
   "avg_confidence": 0.4159883720930236,
   "pattern_distribution": {
     "abnormallyIncreasedLevelOfChemicalEntityInBlood": 57,
-    "abnormallyDecreasedLevelOfChemicalEntityInBlood": 42,
-    "abnormalLevelOfChemicalEntityInBlood": 34,
+    "abnormallyDecreasedLevelOfChemicalEntityInBlood": 43,
+    "abnormalLevelOfChemicalEntityInBlood": 33,
     "activity": 32,
     "abnormallyDecreasedLevelOfChemicalEntityInLocation": 3,
     "abnormallyIncreasedLevelOfChemicalEntityInLocation": 3,
