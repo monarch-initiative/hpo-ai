@@ -8,6 +8,12 @@ tmp/
 # Local working clone of the HPO repo (scratch; never committed or linted)
 /github/
 
+# Scratch / generated outputs kept locally, never committed
+/background/
+
+# Ephemeral issue drafts (nico-create-issue) — reviewed locally, posted to GitHub
+/issues/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -145,3 +151,6 @@ dmypy.json
 
 # macOS
 .DS_Store
+
+# Generated curator review tables
+/reviews/
