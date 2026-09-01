@@ -1,17 +1,59 @@
 # Name normalization rules for chemical/protein entity labels.
 #
-# Derived from the HPO build SPARQL:
-#   src/sparql/update-chemical-labels.ru
+# Ported from the HPO build SPARQL (the source of truth):
+#   ~/ws/ont/human-phenotype-ontology/src/sparql/update-chemical-labels.ru
+# When that file changes upstream, sync these rules (see CLAUDE.md).
 #
-# Rules are applied in order: generic_cleanups first, then specific_renames.
+# Rules are applied in order: generic_cleanups (regex) first, then
+# specific_renames (literal substring). The one order-sensitive case
+# ("nitrogen molecular entity" must be renamed before " molecular entity$"
+# is stripped) is handled by ordering within generic_cleanups.
 
 generic_cleanups:
+  # strip trailing " atom" (e.g. "calcium atom" -> "calcium")
   - pattern: " atom$"
     replacement: ""
+  # rename before the " molecular entity$" strip below can eat it
+  - pattern: "nitrogen molecular entity"
+    replacement: "nitrogen compound"
+  # acylcarnitine systematic -> common forms
+  - pattern: "o-decenoylcarnitine?\\b"
+    replacement: "decenoylcarnitine"
+  - pattern: "O-octanoylcarnitine"
+    replacement: "octanoylcarnitine"
+  - pattern: "O-hexanoylcarnitine"
+    replacement: "hexanoylcarnitine"
+  - pattern: "O-propanoylcarnitine"
+    replacement: "propionylcarnitine"
+  - pattern: "O-tetradecanoylcarnitine"
+    replacement: "tetradecanoylcarnitine"
+  - pattern: "o-decanoylcarnitine"
+    replacement: "decanoylcarnitine"
+  - pattern: "O-stearoylcarnitine"
+    replacement: "stearoylcarnitine"
+  - pattern: "tetradecanoic acid"
+    replacement: "myristic acid"
   - pattern: " molecular entity$"
     replacement: ""
   - pattern: " \\(human\\)"
     replacement: ""
+  # ion forms -> element/common name
+  - pattern: "calcium\\(2\\+\\)"
+    replacement: "calcium"
+  - pattern: "magnesium\\(2\\+\\)"
+    replacement: "magnesium"
+  - pattern: "zinc\\(2\\+\\)"
+    replacement: "zinc"
+  - pattern: "sodium\\(1\\+\\)"
+    replacement: "sodium"
+  - pattern: "diphosphate\\(4\\-\\)"
+    replacement: "pyrophosphate"
+  # L-stereoisomer specifier for amino acids that are L-form in biology;
+  # \b guards prevent mangling "Hyperphenylalaninemia" etc.
+  - pattern: "\\bphenylalanine\\b"
+    replacement: "L-phenylalanine"
+  - pattern: "\\boxo carboxylic acid\\b"
+    replacement: "keto acid"
 
 specific_renames:
   - old: "alpha-2-HS-glycoprotein"
@@ -34,5 +76,14 @@ specific_renames:
     new: "DNAJB9"
   - old: "72 kDa type IV collagenase"
     new: "matrix metalloproteinase 2"
+  - old: "mucin-16"
+    new: "CA-125"
   - old: "serine protease 1"
     new: "cationic trypsinogen"
+  - old: "choriogonadotropin subunit beta"
+    new: "beta-hCG"
+  # restore well-known clinical names dropped for CHEBI systematic names
+  - old: "N-benzoylglycine"
+    new: "hippuric acid"
+  - old: "cholesta-5,7-dien-3beta-ol"
+    new: "7-dehydrocholesterol"

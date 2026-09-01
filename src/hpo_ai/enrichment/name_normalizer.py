@@ -34,6 +34,44 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel
 
+# Enzyme-activity rule (ported from update-chemical-labels.ru): an enzyme is
+# measured as *activity*, not concentration. Trigger on a word ending in "-ase"
+# or a known protease that does not follow the "-ase" convention...
+_ENZYME_RE = re.compile(
+    r"\w+ase\b|\b(?:thrombin|plasmin|trypsin|chymotrypsin|pepsin|renin|kallikrein)\b",
+    re.IGNORECASE,
+)
+# ...but exclude zymogens/inhibitors that match the pattern yet are not enzymes,
+# and "-base" words (nucleobase, Schiff base) that match "\w+ase" spuriously.
+_ENZYME_EXCLUDE_RE = re.compile(
+    r"\b(?:alpha-1-antitrypsin|antitrypsin|plasminogen|trypsinogen"
+    r"|chymotrypsinogen|pepsinogen)\b|base\b",
+    re.IGNORECASE,
+)
+
+
+def is_enzyme_activity(name: str) -> bool:
+    """Return True if a chemical name denotes an enzyme measured as activity.
+
+    Mirrors the enzyme rule in ``update-chemical-labels.ru``: an ``-ase`` word
+    (or a known protease) implies the phenotype is about catalytic *activity*
+    rather than concentration, excluding zymogens/inhibitors and ``-base`` words.
+
+    >>> is_enzyme_activity("creatine kinase")
+    True
+    >>> is_enzyme_activity("beta-hexosaminidase")
+    True
+    >>> is_enzyme_activity("thrombin")
+    True
+    >>> is_enzyme_activity("trypsinogen")
+    False
+    >>> is_enzyme_activity("nucleobase")
+    False
+    >>> is_enzyme_activity("fetuin-A")
+    False
+    """
+    return bool(_ENZYME_RE.search(name)) and not _ENZYME_EXCLUDE_RE.search(name)
+
 
 class GenericCleanup(BaseModel):
     """A regex-based cleanup rule.
@@ -86,9 +124,9 @@ def load_name_normalization_rules(path: str | Path) -> NameNormalizationRules:
     ...     "conf/name_normalization_rules.yaml"
     ... )
     >>> len(rules.generic_cleanups)
-    3
+    19
     >>> len(rules.specific_renames)
-    11
+    15
     """
     with open(path) as fh:
         data = yaml.safe_load(fh)

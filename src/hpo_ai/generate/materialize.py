@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 
 from hpo_ai.associate.models import Association
 from hpo_ai.datamodel import (
@@ -12,8 +13,22 @@ from hpo_ai.datamodel import (
     Synonym,
     SynonymScope,
 )
+from hpo_ai.enrichment.name_normalizer import NameNormalizer, is_enzyme_activity
 
 logger = logging.getLogger(__name__)
+
+_CONCENTRATION_RE = re.compile(r"\bconcentration\b")
+
+
+def _to_activity(text: str) -> str:
+    """Swap the measurement noun 'concentration' for 'activity' (enzyme rule).
+
+    >>> _to_activity("Elevated circulating creatine kinase concentration")
+    'Elevated circulating creatine kinase activity'
+    >>> _to_activity("The concentration of X in the blood circulation ...")
+    'The activity of X in the blood circulation ...'
+    """
+    return _CONCENTRATION_RE.sub("activity", text)
 
 _OBO = "http://purl.obolibrary.org/obo/"
 
@@ -45,7 +60,11 @@ def _fill_text(template: str, chemical: str, qualifier: str | None) -> str:
     )
 
 
-def materialize(term: HPTerm, association: Association) -> CurationProposal:
+def materialize(
+    term: HPTerm,
+    association: Association,
+    normalizer: NameNormalizer | None = None,
+) -> CurationProposal:
     """Build a curation proposal by filling the associated pattern.
 
     Text (label, definition, synonyms) is always produced. The logical
@@ -55,6 +74,10 @@ def materialize(term: HPTerm, association: Association) -> CurationProposal:
     Args:
         term: The HP term being curated.
         association: The pattern association with resolved fillers.
+        normalizer: Optional name normaliser. When given, the chemical name is
+            canonicalised (mirroring ``update-chemical-labels.ru``) and the
+            enzyme-activity rule (``concentration`` -> ``activity``) is applied
+            to the label and definition. When ``None`` behaviour is unchanged.
 
     Returns:
         A :class:`CurationProposal`.
@@ -62,6 +85,10 @@ def materialize(term: HPTerm, association: Association) -> CurationProposal:
     pattern = association.pattern
     fillers = association.fillers
     chemical_text = fillers.chemical_string
+    enzyme = False
+    if normalizer is not None:
+        chemical_text = normalizer.normalize(chemical_text)
+        enzyme = is_enzyme_activity(chemical_text)
 
     pattern_label = _fill_text(pattern.name, chemical_text, pattern.qualifier)
 
@@ -118,6 +145,12 @@ def materialize(term: HPTerm, association: Association) -> CurationProposal:
             .replace("{location}", location_iri)
         )
         proposed_chemical_entity = fillers.chemical_entity.entity_id
+
+    # Enzyme phenotypes are measured as activity, not concentration.
+    if enzyme:
+        proposed_label = _to_activity(proposed_label)
+        if proposed_definition:
+            proposed_definition = _to_activity(proposed_definition)
 
     change_type = _classify_change(term, proposed_label, proposed_definition,
                                    proposed_logical_definition)

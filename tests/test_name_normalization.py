@@ -151,3 +151,105 @@ class TestFullChain:
     def test_empty_string(self, normalizer: NameNormalizer):
         """Empty string passes through."""
         assert normalizer.normalize("") == ""
+
+
+# ---------------------------------------------------------------------------
+# The production conf rules (the full update-chemical-labels.ru port)
+# ---------------------------------------------------------------------------
+
+CONF_RULES = Path(__file__).resolve().parents[1] / "conf" / "name_normalization_rules.yaml"
+
+
+class TestConfPortedRules:
+    """Rules ported from the current update-chemical-labels.ru into conf/."""
+
+    @pytest.fixture
+    def normalizer(self) -> NameNormalizer:
+        return NameNormalizer(load_name_normalization_rules(CONF_RULES))
+
+    @pytest.mark.parametrize(
+        "raw, expected",
+        [
+            ("alpha-2-HS-glycoprotein", "fetuin-A"),
+            ("calcium(2+)", "calcium"),
+            ("sodium(1+)", "sodium"),
+            ("diphosphate(4-)", "pyrophosphate"),
+            ("mucin-16", "CA-125"),
+            ("N-benzoylglycine", "hippuric acid"),
+            ("choriogonadotropin subunit beta", "beta-hCG"),
+            ("phenylalanine", "L-phenylalanine"),
+            ("O-octanoylcarnitine", "octanoylcarnitine"),
+            # order-sensitive: rename must beat the " molecular entity$" strip
+            ("nitrogen molecular entity", "nitrogen compound"),
+        ],
+    )
+    def test_conf_rule(self, normalizer: NameNormalizer, raw: str, expected: str) -> None:
+        assert normalizer.normalize(raw) == expected
+
+
+class TestEnzymeActivityRule:
+    """The -ase/protease concentration->activity trigger."""
+
+    @pytest.mark.parametrize(
+        "name, expected",
+        [
+            ("creatine kinase", True),
+            ("beta-hexosaminidase", True),
+            ("amylase", True),
+            ("thrombin", True),
+            ("trypsinogen", False),   # zymogen excluded
+            ("antitrypsin", False),   # inhibitor excluded
+            ("nucleobase", False),    # -base excluded
+            ("fetuin-A", False),      # not an enzyme
+        ],
+    )
+    def test_is_enzyme_activity(self, name: str, expected: bool) -> None:
+        from hpo_ai.enrichment.name_normalizer import is_enzyme_activity
+        assert is_enzyme_activity(name) is expected
+
+
+class TestMaterializeWiring:
+    """materialize() applies normalisation + the enzyme rule when given a normalizer."""
+
+    def _assoc(self, chemical: str):
+        from hpo_ai.associate.models import Association, Fillers
+        from hpo_ai.datamodel import ChemicalEntityEvidence, EvidenceType
+        from hpo_ai.patterns.loader import load_patterns
+
+        pattern = next(
+            p for p in load_patterns("patterns") if p.id == "increasedChemicalInBlood"
+        )
+        ev = ChemicalEntityEvidence(
+            id="ev", entity_id="CHEBI:00", entity_label=chemical,
+            entity_source="CHEBI", confidence=1.0,
+            evidence_type=EvidenceType.chebi_match,
+        )
+        fillers = Fillers("increased", "UBERON:0000178", chemical, ev, True, False)
+        return Association("HP:0000001", "x", pattern, fillers, 1.0, "ev")
+
+    def test_enzyme_label_uses_activity(self) -> None:
+        from hpo_ai.datamodel import HPTerm
+        from hpo_ai.enrichment.name_normalizer import (
+            NameNormalizer,
+            load_name_normalization_rules,
+        )
+        from hpo_ai.generate.materialize import materialize
+
+        norm = NameNormalizer(load_name_normalization_rules(CONF_RULES))
+        term = HPTerm(id="HP:0000001", label="Increased creatine kinase")
+        proposal = materialize(term, self._assoc("creatine kinase"), normalizer=norm)
+        assert proposal.proposed_label == "Elevated circulating creatine kinase activity"
+        assert "activity" in (proposal.proposed_definition or "")
+
+    def test_non_enzyme_keeps_concentration(self) -> None:
+        from hpo_ai.datamodel import HPTerm
+        from hpo_ai.enrichment.name_normalizer import (
+            NameNormalizer,
+            load_name_normalization_rules,
+        )
+        from hpo_ai.generate.materialize import materialize
+
+        norm = NameNormalizer(load_name_normalization_rules(CONF_RULES))
+        term = HPTerm(id="HP:0000001", label="Increased glucose")
+        proposal = materialize(term, self._assoc("glucose"), normalizer=norm)
+        assert proposal.proposed_label == "Elevated circulating glucose concentration"
