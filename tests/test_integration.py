@@ -26,6 +26,7 @@ TEST_BRANCH_LABEL = "Abnormal circulating protein concentration"
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 
+@pytest.mark.integration
 class TestBranchExtraction:
     """Test extraction of a specific branch."""
 
@@ -62,6 +63,7 @@ class TestBranchExtraction:
             assert term.label is not None, f"Term {term.id} has no label"
 
 
+@pytest.mark.integration
 class TestBranchPatternAssignment:
     """Test pattern assignment for the test branch."""
 
@@ -106,6 +108,7 @@ class TestBranchPatternAssignment:
         assert blood_count >= 25, f"Only {blood_count}/50 were blood patterns"
 
 
+@pytest.mark.integration
 class TestBranchPipeline:
     """Integration tests for the full pipeline on the test branch."""
 

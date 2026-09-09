@@ -56,6 +56,8 @@ style = "pep440"
 fallback-version = "0.0.0"
 
 # Ref.: https://docs.pytest.org/en/stable/reference/reference.html#configuration-options
+# NOTE: pytest is configured in pytest.ini (it takes precedence over this
+# section, so keep test config there — not here).
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 

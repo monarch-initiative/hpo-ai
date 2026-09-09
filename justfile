@@ -34,19 +34,19 @@ install:
 
 # Run all tests
 [group('model development')]
-test: pytest mypy format
+test: pytest doctest mypy format
 
 test-full: test pytest-integration
 
 pytest:
   uv run pytest
 
-# include integration tests
+# run the external-resource tests excluded from the default suite
 pytest-integration:
-	$(RUN) pytest -m ""
+  uv run pytest -m "integration or slow"
 
 doctest:
-  uv run pytest  --doctest-modules src
+  uv run pytest --doctest-modules src -m ""
 
 mypy:
   uv run mypy src tests
