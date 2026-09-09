@@ -1,5 +1,13 @@
 # Pipeline Overview
 
+!!! warning "This page describes the earlier evidence-packet design"
+
+    The current pipeline is the pattern-driven `curate` / `apply` pair described
+    in the [pipeline walkthrough](pipeline-walkthrough.md). The
+    `build-packets` / `EvidencePacket` / auto-approval flow documented below is
+    still available from the CLI, but it is no longer the primary path. Kept for
+    reference.
+
 ## The Problem
 
 The Human Phenotype Ontology (HPO) contains hundreds of chemical phenotype

@@ -10,23 +10,31 @@ theme:
 
 # for adding extra css/js see https://www.mkdocs.org/user-guide/customizing-your-theme/
 
+markdown_extensions:
+  # Needed for the "!!! warning" callouts; deliberately NOT adding
+  # pymdownx.superfences, which would need custom_fences for mermaid2.
+  - admonition
+
 plugins:
   - search
   - mknotebooks:
       execute: false
   - mermaid2:
       version: 11.4.1
-  
+
 #watch:
 #  - src/hpo_ai/schema
 
 nav:
   - Home: index.md
-  - Overview: overview.md
   - Pipeline walkthrough: pipeline-walkthrough.md
-  
+  - Regression corpus: corpus-failure-modes.md
+  - Demo: demo.md
+  - Legacy evidence-packet pipeline: overview.md
+  - About: about.md
+
 exclude_docs: |
   /templates-linkml/
 
-site_url: https://obophenotype.github.io/hpo-ai
-repo_url: https://github.com/obophenotype/hpo-ai
+site_url: https://monarch-initiative.github.io/hpo-ai
+repo_url: https://github.com/monarch-initiative/hpo-ai
