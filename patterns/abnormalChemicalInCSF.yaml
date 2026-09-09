@@ -12,7 +12,7 @@ vars:
     range: UBERON:0001359
     fixed: true
 name: Abnormal CSF {chemical} concentration
-definition: Any deviation from the normal concentration of {chemical} in the cerebrospinal fluid.
+definition: Any deviation from the normal concentration of {chemical} in the cerebrospinal fluid (CSF).
 synonyms:
 - scope: exact
   text: Abnormal {chemical} concentration

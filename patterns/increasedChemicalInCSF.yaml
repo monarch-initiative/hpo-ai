@@ -12,7 +12,7 @@ vars:
     range: UBERON:0001359
     fixed: true
 name: Elevated CSF {chemical} concentration
-definition: The concentration of {chemical} in the cerebrospinal fluid is above the upper limit of normal.
+definition: The concentration of {chemical} in the cerebrospinal fluid (CSF) is above the upper limit of normal.
 synonyms:
 - scope: exact
   text: Increased {chemical} concentration

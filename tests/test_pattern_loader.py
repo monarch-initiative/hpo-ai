@@ -45,3 +45,16 @@ def test_location_var_is_fixed() -> None:
     loc = var_by_name(p, "location")
     assert loc is not None
     assert loc.fixed is True
+
+
+def test_csf_definitions_spell_out_csf_abbreviation() -> None:
+    """CSF pattern definitions append '(CSF)' after 'cerebrospinal fluid'."""
+    for name in ("increasedChemicalInCSF", "decreasedChemicalInCSF",
+                 "abnormalChemicalInCSF"):
+        p = load_pattern_file(PATTERN_DIR / f"{name}.yaml")
+        assert p.definition is not None
+        assert "cerebrospinal fluid (CSF)" in p.definition, name
+        # no bare mention left without the abbreviation
+        assert "cerebrospinal fluid " not in p.definition.replace(
+            "cerebrospinal fluid (CSF)", ""
+        ), name
