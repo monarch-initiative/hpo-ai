@@ -130,4 +130,4 @@ implementation diverges.
 2. All commands are run through `just` or `uv run`
 3. The project uses dynamic versioning from git tags
 4. Regenerate datamodels after schema changes: `uv run gen-pydantic src/hpo_ai/schema/hpo_ai.yaml > src/hpo_ai/datamodel/hpo_ai.py`
-5. Documentation is auto-deployed to GitHub Pages at https://obophenotype.github.io/hpo-ai
+5. Documentation is auto-deployed to GitHub Pages at https://monarch-initiative.github.io/hpo-ai
